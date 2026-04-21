@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>oh( )hi</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400;1,600;1,700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body { background: var(--black); }
+
+    #hero {
+      width: 100%;
+      height: 100vh;
+      position: relative;
+      overflow: hidden;
+      background: var(--black);
+    }
+    #hero-canvas {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <a class="logo" href="index.html">oh( )hi</a>
+    <ul class="nav-menu">
+      <li><a href="work.html"     data-palette="2">Work</a></li>
+      <li><a href="write.html"    data-palette="3">Write</a></li>
+      <li><a href="partners.html" data-palette="4">Partners</a></li>
+    </ul>
+  </nav>
+
+  <section id="hero">
+    <canvas id="hero-canvas"></canvas>
+  </section>
+
+  <script>
+  (() => {
+    const canvas = document.getElementById('hero-canvas');
+    const ctx    = canvas.getContext('2d');
+
+    function resize() {
+      canvas.width  = canvas.offsetWidth;
+      canvas.height = canvas.offsetHeight;
+    }
+    resize();
+    window.addEventListener('resize', resize);
+
+    /* ── Color palette: white → #170A8A in 5 steps ── */
+    const VIVID = [
+      '#FFFFFF',   // 0
+      '#C5C2E2',   // 1
+      '#8B85C5',   // 2  → Work
+      '#5148A8',   // 3  → Write
+      '#170A8A',   // 4  → Partners
+    ];
+
+    /* Settled gray tones matching luminosity of each vivid step */
+    const GRAY = [
+      '#888888',
+      '#787880',
+      '#686870',
+      '#585866',
+      '#484858',
+    ];
+
+    /* ── State ── */
+    let settlePhase = false;
+    let hoveredPalette = -1;   // -1 = none; 0–4 = active palette index
+
+    setTimeout(() => { settlePhase = true; }, 5500);
+
+    /* ── Nav hover wiring ── */
+    document.querySelectorAll('.nav-menu a[data-palette]').forEach(el => {
+      const idx = parseInt(el.dataset.palette, 10);
+      el.addEventListener('mouseenter', () => { hoveredPalette = idx; });
+      el.addEventListener('mouseleave', () => { hoveredPalette = -1; });
+    });
+
+    /* ── Color helpers ── */
+    function hexToRgb(hex) {
+      const n = parseInt(hex.slice(1), 16);
+      return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
+    }
+
+    function lerpColor(fromHex, toHex, t) {
+      const a = hexToRgb(fromHex), b = hexToRgb(toHex);
+      const r = Math.round(a[0] + (b[0] - a[0]) * t);
+      const g = Math.round(a[1] + (b[1] - a[1]) * t);
+      const bv = Math.round(a[2] + (b[2] - a[2]) * t);
+      return `rgb(${r},${g},${bv})`;
+    }
+
+    /* ── Ball ── */
+    const TRAIL = 10;
+
+    class Ball {
+      constructor() {
+        this.paletteIndex = Math.floor(Math.random() * VIVID.length);
+        this.r     = Math.random() * 58 + 16;
+        this.alpha = .88 + Math.random() * .12;
+        this.trail = [];
+
+        /* current rendered color (lerped each frame) */
+        this.displayColor = VIVID[this.paletteIndex];
+
+        const roll = Math.random();
+        const spd  = Math.random() * 10 + 7;
+        if (roll < .6) {
+          this.x = Math.random() * canvas.width;
+          this.y = -this.r * 1.5;
+          this.vx = (Math.random() - .5) * spd * 1.2;
+          this.vy = spd * (.4 + Math.random() * .8);
+        } else if (roll < .78) {
+          this.x = canvas.width + this.r;
+          this.y = Math.random() * canvas.height * .75;
+          this.vx = -spd * (.5 + Math.random() * .7);
+          this.vy = (Math.random() - .3) * spd;
+        } else {
+          this.x = -this.r;
+          this.y = Math.random() * canvas.height * .75;
+          this.vx = spd * (.5 + Math.random() * .7);
+          this.vy = (Math.random() - .3) * spd;
+        }
+      }
+
+      targetColor() {
+        if (!settlePhase) return VIVID[this.paletteIndex];
+        /* If a nav item is hovered, balls matching that palette index become vivid */
+        if (hoveredPalette !== -1 && this.paletteIndex === hoveredPalette) {
+          return VIVID[this.paletteIndex];
+        }
+        return GRAY[this.paletteIndex];
+      }
+
+      update(all) {
+        this.trail.push({ x: this.x, y: this.y });
+        if (this.trail.length > TRAIL) this.trail.shift();
+
+        /* Lerp display color toward target */
+        const target = this.targetColor();
+        this.displayColor = lerpColor(this.displayColor, target, 0.06);
+
+        this.vy += .18;
+        this.vx *= .989; this.vy *= .989;
+        this.x += this.vx; this.y += this.vy;
+
+        const cw = canvas.width, ch = canvas.height, r = this.r, e = .68;
+        if (this.x - r < 0)  { this.x = r;    this.vx =  Math.abs(this.vx) * e; }
+        if (this.x + r > cw) { this.x = cw-r; this.vx = -Math.abs(this.vx) * e; }
+        if (this.y - r < 0)  { this.y = r;    this.vy =  Math.abs(this.vy) * e; }
+        if (this.y + r > ch) { this.y = ch-r; this.vy = -Math.abs(this.vy) * e; }
+
+        for (const o of all) {
+          if (o === this) continue;
+          const dx = o.x - this.x, dy = o.y - this.y;
+          const d  = Math.hypot(dx, dy), mn = this.r + o.r;
+          if (d >= mn || d === 0) continue;
+          const nx = dx/d, ny = dy/d, ov = (mn-d)*.5;
+          this.x -= nx*ov; this.y -= ny*ov;
+          o.x    += nx*ov; o.y    += ny*ov;
+          const dvx = this.vx - o.vx, dvy = this.vy - o.vy;
+          const dot = dvx*nx + dvy*ny;
+          if (dot <= 0) continue;
+          const m1 = this.r*this.r, m2 = o.r*o.r, tm = m1+m2;
+          const imp = (2*dot*.74)/tm;
+          this.vx -= imp*m2*nx; this.vy -= imp*m2*ny;
+          o.vx    += imp*m1*nx; o.vy    += imp*m1*ny;
+        }
+      }
+
+      draw() {
+        /* Ghost trail: outline circles */
+        for (let i = 0; i < this.trail.length; i++) {
+          const t  = (i+1) / this.trail.length;
+          const pt = this.trail[i];
+          ctx.save();
+          ctx.globalAlpha = t * t * .28;
+          ctx.beginPath();
+          ctx.arc(pt.x, pt.y, this.r, 0, Math.PI*2);
+          ctx.strokeStyle = this.displayColor;
+          ctx.lineWidth   = 1.2;
+          ctx.stroke();
+          ctx.restore();
+        }
+        /* Main ball: flat fill */
+        ctx.save();
+        ctx.globalAlpha = this.alpha;
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.r, 0, Math.PI*2);
+        ctx.fillStyle = this.displayColor;
+        ctx.fill();
+        ctx.restore();
+      }
+    }
+
+    const balls = [];
+    for (let i = 0; i < 20; i++) setTimeout(() => balls.push(new Ball()), i * 100);
+
+    (function loop() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      for (const b of balls) { b.update(balls); b.draw(); }
+      requestAnimationFrame(loop);
+    })();
+  })();
+  </script>
+</body>
+</html>

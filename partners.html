@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Partners — oh( )hi</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400;1,600;1,700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body { background: var(--cream); color: #111; }
+
+    .partners-wrap {
+      padding: 250px var(--px-r) 140px var(--px-l);   /* 140 + 110 */
+      min-height: 100vh;
+    }
+
+    /* Page heading */
+    .page-heading {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(60px, 8vw, 100px);
+      font-weight: 700;
+      font-style: italic;
+      line-height: 1;
+      letter-spacing: -.025em;
+      color: #111;
+      margin-bottom: 80px;
+    }
+
+    /* Intro text */
+    .partners-intro {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(15px, 1.6vw, 18px);
+      font-weight: 400;
+      font-style: italic;
+      color: #888;
+      margin-bottom: 72px;
+      max-width: 480px;
+      line-height: 1.7;
+    }
+
+    /* Grid */
+    .partners-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 1px;
+      background: rgba(0,0,0,.08);
+      outline: 1px solid rgba(0,0,0,.08);
+    }
+
+    .partner-cell {
+      aspect-ratio: 2/1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--cream);
+      cursor: default;
+      transition: background .2s;
+    }
+    .partner-cell:hover { background: rgba(0,0,0,.04); }
+
+    .partner-cell span {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: rgba(0,0,0,.3);
+    }
+
+    /* Footer inside page */
+    .page-footer {
+      margin-top: 120px;
+      padding-top: 56px;
+      border-top: 1px solid rgba(0,0,0,.08);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+      text-align: center;
+    }
+
+    .footer-desc {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(14px, 1.5vw, 17px);
+      font-weight: 300;
+      font-style: italic;
+      color: rgba(0,0,0,.4);
+      line-height: 1.9;
+    }
+
+    .footer-email {
+      font-family: 'Helvetica Neue', Arial, sans-serif;
+      font-size: 12px;
+      font-weight: 400;
+      letter-spacing: .08em;
+      color: rgba(0,0,0,.35);
+      text-decoration: none;
+      transition: color .2s;
+    }
+    .footer-email:hover { color: rgba(0,0,0,.7); }
+
+    .footer-ig {
+      color: rgba(0,0,0,.28);
+      text-decoration: none;
+      transition: color .2s;
+    }
+    .footer-ig:hover { color: rgba(0,0,0,.7); }
+    .footer-ig svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+
+    .footer-copy {
+      font-family: 'Helvetica Neue', Arial, sans-serif;
+      font-size: 10px;
+      color: rgba(0,0,0,.2);
+      letter-spacing: .07em;
+      margin-top: 8px;
+    }
+
+    @media (max-width: 768px) {
+      .partners-wrap { padding: 120px 24px 80px; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <a class="logo" href="index.html">oh( )hi</a>
+    <ul class="nav-menu">
+      <li><a href="work.html">Work</a></li>
+      <li><a href="write.html">Write</a></li>
+      <li><a href="partners.html">Partners</a></li>
+    </ul>
+  </nav>
+
+  <main class="partners-wrap">
+
+    <h1 class="page-heading">Partners</h1>
+
+    <p class="partners-intro">
+      We collaborate with clients and studios who believe<br>
+      that good design is inseparable from good thinking.
+    </p>
+
+    <div class="partners-grid">
+      <div class="partner-cell"><span>CJ Olive Young</span></div>
+      <div class="partner-cell"><span>Studio xsxl</span></div>
+      <div class="partner-cell"><span>Nova Labs</span></div>
+      <div class="partner-cell"><span>Forma Group</span></div>
+      <div class="partner-cell"><span>Parallel</span></div>
+      <div class="partner-cell"><span>Drift Studio</span></div>
+      <div class="partner-cell"><span>Canvas Co.</span></div>
+      <div class="partner-cell"><span>Sphere</span></div>
+      <div class="partner-cell"><span>Echo</span></div>
+      <div class="partner-cell"><span>Lattice</span></div>
+      <div class="partner-cell"><span>Prism</span></div>
+      <div class="partner-cell"><span>Fold</span></div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="page-footer">
+      <p class="footer-desc">
+        We doing about ( interior )&nbsp;&nbsp;( branding )&nbsp;&nbsp;( spacial strategy ) and more.<br>
+        If you have any questions, email me!
+      </p>
+      <a class="footer-email" href="mailto:ohhi@studioohhi.com">ohhi@studioohhi.com</a>
+      <a class="footer-ig" href="#" aria-label="Instagram">
+        <svg viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="0.5" fill="currentColor" stroke="none"/></svg>
+      </a>
+      <p class="footer-copy">©2020–2025 studio oh(.)hi&nbsp;&nbsp;all rights reserved.</p>
+    </footer>
+
+  </main>
+
+</body>
+</html>

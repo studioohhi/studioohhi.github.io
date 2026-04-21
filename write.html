@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Write — oh( )hi</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400;1,600;1,700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body { background: var(--black); color: var(--cream); }
+
+    .write-wrap {
+      padding: 250px var(--px-r) 120px var(--px-l);   /* 140 + 110 */
+      min-height: 100vh;
+    }
+
+    /* Page heading */
+    .page-heading {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(60px, 8vw, 100px);
+      font-weight: 700;
+      font-style: italic;
+      line-height: 1;
+      letter-spacing: -.025em;
+      color: var(--cream);
+      margin-bottom: 72px;
+    }
+
+    /* Article list */
+    .write-list {
+      border-top: 1px solid rgba(255,255,255,.07);
+    }
+
+    .write-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 32px;
+      padding: 30px 0;
+      border-bottom: 1px solid rgba(255,255,255,.07);
+      color: var(--cream);
+      text-decoration: none;
+      transition: opacity .22s;
+      opacity: 0;
+      transform: translateY(18px);
+      /* reveal applied by JS */
+    }
+    .write-item.visible { opacity: 1; transform: none; transition: opacity .6s ease, transform .6s ease; }
+    .write-item:hover { opacity: .32; }
+
+    .wi-left { display: flex; flex-direction: column; gap: 8px; }
+
+    .wi-tag {
+      font-family: 'Helvetica Neue', Arial, sans-serif;
+      font-size: 9px;
+      font-weight: 600;
+      letter-spacing: .22em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,.28);
+    }
+
+    .wi-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(18px, 2.2vw, 26px);
+      font-weight: 400;
+      font-style: italic;
+      letter-spacing: .005em;
+      line-height: 1.25;
+    }
+
+    .wi-date {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 14px;
+      font-weight: 300;
+      font-style: italic;
+      color: rgba(255,255,255,.22);
+      white-space: nowrap;
+    }
+
+    @media (max-width: 768px) {
+      .write-wrap { padding: 120px 24px 80px; }
+      .write-item { gap: 16px; }
+      .wi-date { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <a class="logo" href="index.html">oh( )hi</a>
+    <ul class="nav-menu">
+      <li><a href="work.html">Work</a></li>
+      <li><a href="write.html">Write</a></li>
+      <li><a href="partners.html">Partners</a></li>
+    </ul>
+  </nav>
+
+  <main class="write-wrap">
+
+    <h1 class="page-heading">Write</h1>
+
+    <div class="write-list">
+
+      <a class="write-item" href="#">
+        <div class="wi-left">
+          <span class="wi-tag">Essay</span>
+          <span class="wi-title">On the Aesthetics of Emptiness</span>
+        </div>
+        <span class="wi-date">Mar 2024</span>
+      </a>
+
+      <a class="write-item" href="#">
+        <div class="wi-left">
+          <span class="wi-tag">Process</span>
+          <span class="wi-title">How We Think About Visual Systems</span>
+        </div>
+        <span class="wi-date">Jan 2024</span>
+      </a>
+
+      <a class="write-item" href="#">
+        <div class="wi-left">
+          <span class="wi-tag">Interview</span>
+          <span class="wi-title">Conversation with a Type Designer</span>
+        </div>
+        <span class="wi-date">Nov 2023</span>
+      </a>
+
+      <a class="write-item" href="#">
+        <div class="wi-left">
+          <span class="wi-tag">Essay</span>
+          <span class="wi-title">The Invisible Hand in UX Design</span>
+        </div>
+        <span class="wi-date">Sep 2023</span>
+      </a>
+
+      <a class="write-item" href="#">
+        <div class="wi-left">
+          <span class="wi-tag">Case Study</span>
+          <span class="wi-title">Redesigning for Accessibility First</span>
+        </div>
+        <span class="wi-date">Jul 2023</span>
+      </a>
+
+      <a class="write-item" href="#">
+        <div class="wi-left">
+          <span class="wi-tag">Essay</span>
+          <span class="wi-title">Material Culture and the Objects We Keep</span>
+        </div>
+        <span class="wi-date">Mar 2023</span>
+      </a>
+
+      <a class="write-item" href="#">
+        <div class="wi-left">
+          <span class="wi-tag">Reflection</span>
+          <span class="wi-title">Why Constraints Make Better Designers</span>
+        </div>
+        <span class="wi-date">Dec 2022</span>
+      </a>
+
+    </div>
+
+  </main>
+
+  <script>
+    const io = new IntersectionObserver(
+      entries => entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); }),
+      { threshold: .05 }
+    );
+    document.querySelectorAll('.write-item').forEach(el => io.observe(el));
+  </script>
+</body>
+</html>

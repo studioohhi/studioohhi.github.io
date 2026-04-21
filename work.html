@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Work — oh( )hi</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400;1,600;1,700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body { background: #fff; color: #111; }
+
+    /* ── PAGE WRAP ── */
+    .work-wrap { padding-top: 220px; }
+
+    /* ── YEAR SECTION ── */
+    .year-section {
+      padding: 64px var(--px-r) 110px var(--px-l);
+    }
+
+    .year-heading {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(62px, 8.5vw, 108px);
+      font-weight: 700;
+      font-style: italic;
+      line-height: 1;
+      letter-spacing: -.025em;
+      color: #111;
+      margin-bottom: 72px;
+    }
+
+    /* ── PROJECT ENTRY ── */
+    .project-entry {
+      margin-bottom: 112px;
+      opacity: 0;
+      transform: translateY(28px);
+      transition: opacity .65s ease, transform .65s ease;
+      position: relative;
+    }
+    .project-entry.visible { opacity: 1; transform: translateY(0); }
+    .project-entry:hover { z-index: 10; }
+
+    .project-header { margin-bottom: 28px; }
+
+    .project-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(19px, 2.1vw, 26px);
+      font-weight: 600;
+      font-style: italic;
+      line-height: 1.2;
+      margin-bottom: 5px;
+      color: #111;
+    }
+    .project-sub {
+      font-family: 'Helvetica Neue', Arial, sans-serif;
+      font-size: 11.5px;
+      color: #999;
+      letter-spacing: .02em;
+      margin-bottom: 16px;
+    }
+    .project-meta {
+      font-family: 'Helvetica Neue', Arial, sans-serif;
+      font-size: 12px;
+      color: #666;
+      line-height: 1.85;
+    }
+    .project-meta em { color: #aaa; font-style: normal; }
+
+    /* ── IMAGE ROW ── */
+    .pi { display: flex; }
+    .pi.al { justify-content: flex-start; }
+    .pi.ar { justify-content: flex-end; }
+    .pi.ac { justify-content: center; }
+
+    /* overflow: visible so text overlay can exit image bounds */
+    .iw {
+      position: relative;
+      overflow: visible;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    /* widths × 1.20 */
+    .pi.w48 > .iw { width: 48%; }
+    .pi.w60 > .iw { width: 60%; }
+    .pi.w66 > .iw { width: 66%; }
+    .pi.w72 > .iw { width: 72%; }
+    .pi.w78 > .iw { width: 78%; }
+    .pi.w84 > .iw { width: 84%; }
+
+    /* ── PLACEHOLDER IMAGE BLOCKS ── */
+    .ph { width: 100%; display: block; position: relative; overflow: hidden; }
+    .ph.r169 { aspect-ratio: 16/9; }
+    .ph.r43  { aspect-ratio: 4/3; }
+    .ph.r34  { aspect-ratio: 3/4; }
+    .ph.r32  { aspect-ratio: 3/2; }
+
+    .c1 { background: #d6cfc6; }
+    .c2 { background: #c6d4cd; }
+    .c3 { background: #d4c6d2; }
+    .c4 { background: #c9d4cc; }
+    .c5 { background: #d4ccc6; }
+    .c6 { background: #c6cad4; }
+    .c7 { background: #cdd2ca; }
+    .c8 { background: #d2cac6; }
+
+    .ph-label {
+      position: absolute;
+      bottom: 22px; left: 26px;
+      font-family: 'Helvetica Neue', Arial, sans-serif;
+      font-size: 10px;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: rgba(0,0,0,.18);
+      pointer-events: none;
+      user-select: none;
+    }
+
+    /* ════════════════════════════════════════════
+       TEXT OVERLAY
+       Container starts INSIDE image, exits OUTSIDE on hover.
+       to-right: flies out to the right.
+       to-left:  flies out to the left.
+    ════════════════════════════════════════════ */
+
+    .tov {
+      position: absolute;
+      top: 0;
+      height: 100%;
+      width: 66.67%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 7px;
+      z-index: 5;
+      pointer-events: none;
+    }
+
+    /* Anchor: left edge = image right edge.
+       Default: translateX(-100%) pushes container left = occupies right 2/3 of image.
+       Hover:   translateX(0) = container sits outside to the right. */
+    .tov.to-right {
+      left: 100%;
+      align-items: flex-start;
+      padding-left: 18px;
+      transform: translateX(-100%);
+      transition: transform .5s cubic-bezier(.4,0,.2,1);
+    }
+    .iw:hover .tov.to-right { transform: translateX(0); }
+
+    /* Anchor: right edge = image left edge.
+       Default: translateX(100%) pushes container right = occupies left 2/3 of image.
+       Hover:   translateX(0) = container sits outside to the left. */
+    .tov.to-left {
+      right: 100%;
+      align-items: flex-end;
+      padding-right: 18px;
+      transform: translateX(100%);
+      transition: transform .5s cubic-bezier(.4,0,.2,1);
+    }
+    .iw:hover .tov.to-left { transform: translateX(0); }
+
+    /* Each line: opacity stagger on hover; instant on mouse-out */
+    .tov p {
+      display: block;
+      opacity: 0;
+      transition: opacity .28s ease;
+      transition-delay: 0ms;
+    }
+    .tov.to-right p { text-align: left; }
+    .tov.to-left  p { text-align: right; }
+
+    .iw:hover .tov p                    { opacity: 1; }
+    .iw:hover .tov p:nth-child(1) { transition-delay:   0ms; }
+    .iw:hover .tov p:nth-child(2) { transition-delay:  55ms; }
+    .iw:hover .tov p:nth-child(3) { transition-delay: 110ms; }
+    .iw:hover .tov p:nth-child(4) { transition-delay: 165ms; }
+
+    /* ── Shared span: tight per-line background ── */
+    .tov p span {
+      display: inline;
+      background: rgba(10, 10, 10, .9);
+      color: #f0ebe3;
+      padding: 4px 11px;
+      line-height: 1.85;
+      box-decoration-break: clone;
+      -webkit-box-decoration-break: clone;
+    }
+
+    /* Category label */
+    .tov-cat span {
+      font-family: 'Helvetica Neue', Arial, sans-serif;
+      font-size: 9px;
+      font-weight: 600;
+      letter-spacing: .22em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,.45);
+      padding: 3px 10px;
+    }
+
+    /* Project title */
+    .tov-title span {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(16px, 1.8vw, 22px);
+      font-weight: 600;
+      font-style: italic;
+      line-height: 1.55;
+    }
+
+    /* Description */
+    .tov-desc span {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 13.5px;
+      font-weight: 400;
+      color: rgba(255,255,255,.72);
+      line-height: 1.82;
+    }
+
+    /* Year */
+    .tov-year span {
+      font-family: 'Helvetica Neue', Arial, sans-serif;
+      font-size: 9px;
+      letter-spacing: .12em;
+      color: rgba(255,255,255,.38);
+      padding: 3px 10px;
+    }
+
+    /* ── YEAR DIVIDER ── */
+    .year-divider {
+      height: 1px;
+      background: rgba(0,0,0,.07);
+      margin: 0 var(--px-l);
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 900px) {
+      .pi > .iw { width: 88% !important; }
+      .pi.al, .pi.ar, .pi.ac { justify-content: center; }
+      .tov { width: 72%; }
+    }
+    @media (max-width: 768px) {
+      .year-section { padding: 48px 24px 80px; }
+      .tov-title span { font-size: 15px; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <a class="logo" href="index.html">oh( )hi</a>
+    <ul class="nav-menu">
+      <li><a href="work.html">Work</a></li>
+      <li><a href="write.html">Write</a></li>
+      <li><a href="partners.html">Partners</a></li>
+    </ul>
+  </nav>
+
+  <main class="work-wrap">
+
+    <!-- ════════════════ 2024 ════════════════ -->
+    <section class="year-section">
+      <h1 class="year-heading">2024</h1>
+
+      <!-- left, 78% -->
+      <article class="project-entry">
+        <div class="project-header">
+          <h2 class="project-title">Brand Identity System</h2>
+          <p class="project-sub">Global Technology Company, Seoul</p>
+          <div class="project-meta">
+            <p><em>client.</em> Lorem Corp</p>
+            <p><em>identity &amp; strategy  /</em>  studio oh( )hi</p>
+          </div>
+        </div>
+        <div class="pi al w78">
+          <div class="iw">
+            <div class="ph r169 c1"><span class="ph-label">Brand Identity System</span></div>
+            <div class="tov to-left">
+              <p class="tov-cat"><span>Brand Identity</span></p>
+              <p class="tov-title"><span>Brand Identity System</span></p>
+              <p class="tov-desc"><span>Comprehensive visual identity communicating clarity and human connection across all brand touchpoints.</span></p>
+              <p class="tov-year"><span>2024</span></p>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <!-- right, 60% -->
+      <article class="project-entry">
+        <div class="project-header">
+          <h2 class="project-title">Digital Experience Platform</h2>
+          <p class="project-sub">Interactive Installation, Gangnam Seoul</p>
+          <div class="project-meta">
+            <p><em>client.</em> Nova Partners</p>
+            <p><em>spacial design  /</em>  studio oh( )hi &amp; studio xsxl</p>
+          </div>
+        </div>
+        <div class="pi ar w60">
+          <div class="iw">
+            <div class="ph r43 c2"><span class="ph-label">Digital Experience Platform</span></div>
+            <div class="tov to-right">
+              <p class="tov-cat"><span>Digital Experience</span></p>
+              <p class="tov-title"><span>Digital Experience Platform</span></p>
+              <p class="tov-desc"><span>Bridging physical and digital through immersive spatial design and responsive visual systems.</span></p>
+              <p class="tov-year"><span>2024</span></p>
+            </div>
+          </div>
+        </div>
+      </article>
+
+    </section>
+
+    <div class="year-divider"></div>
+
+    <!-- ════════════════ 2023 ════════════════ -->
+    <section class="year-section">
+      <h1 class="year-heading">2023</h1>
+
+      <!-- center, 66% -->
+      <article class="project-entry">
+        <div class="project-header">
+          <h2 class="project-title">Olive Young Global Town</h2>
+          <p class="project-sub">Flag-ship Store, Myeong-dong Seoul</p>
+          <div class="project-meta">
+            <p><em>client.</em> CJ Olive Young</p>
+            <p><em>spacial strategy &amp; design  /</em>  studio oh( )hi &amp; studio xsxl</p>
+          </div>
+        </div>
+        <div class="pi ac w66">
+          <div class="iw">
+            <div class="ph r169 c3"><span class="ph-label">Olive Young Global Town</span></div>
+            <div class="tov to-right">
+              <p class="tov-cat"><span>Spatial Design</span></p>
+              <p class="tov-title"><span>Olive Young Global Town</span></p>
+              <p class="tov-desc"><span>Flagship retail fusing K-beauty culture with an immersive global townscape experience.</span></p>
+              <p class="tov-year"><span>2023</span></p>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <!-- left, 48% -->
+      <article class="project-entry">
+        <div class="project-header">
+          <h2 class="project-title">Cultural Complex Wayfinding</h2>
+          <p class="project-sub">Mixed-Use Development, Yongsan Seoul</p>
+          <div class="project-meta">
+            <p><em>client.</em> Forma Group</p>
+            <p><em>environmental graphics  /</em>  studio oh( )hi</p>
+          </div>
+        </div>
+        <div class="pi al w48">
+          <div class="iw">
+            <div class="ph r34 c4"><span class="ph-label">Cultural Complex Wayfinding</span></div>
+            <div class="tov to-left">
+              <p class="tov-cat"><span>Environmental Graphics</span></p>
+              <p class="tov-title"><span>Cultural Complex Wayfinding</span></p>
+              <p class="tov-desc"><span>Cohesive wayfinding system spanning multiple scales, surfaces, and materials.</span></p>
+              <p class="tov-year"><span>2023</span></p>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <!-- right, 84% -->
+      <article class="project-entry">
+        <div class="project-header">
+          <h2 class="project-title">Film Festival Motion Identity</h2>
+          <p class="project-sub">International Film Festival, Busan</p>
+          <div class="project-meta">
+            <p><em>client.</em> Festival Committee</p>
+            <p><em>motion design  /</em>  studio oh( )hi</p>
+          </div>
+        </div>
+        <div class="pi ar w84">
+          <div class="iw">
+            <div class="ph r169 c5"><span class="ph-label">Film Festival Motion Identity</span></div>
+            <div class="tov to-right">
+              <p class="tov-cat"><span>Motion Design</span></p>
+              <p class="tov-title"><span>Film Festival Motion Identity</span></p>
+              <p class="tov-desc"><span>Title sequence and motion identity capturing the spirit of independent cinema.</span></p>
+              <p class="tov-year"><span>2023</span></p>
+            </div>
+          </div>
+        </div>
+      </article>
+
+    </section>
+
+    <div class="year-divider"></div>
+
+    <!-- ════════════════ 2022 ════════════════ -->
+    <section class="year-section">
+      <h1 class="year-heading">2022</h1>
+
+      <!-- center, 72% -->
+      <article class="project-entry">
+        <div class="project-header">
+          <h2 class="project-title">Wellness App Product Design</h2>
+          <p class="project-sub">Consumer Application, Seoul</p>
+          <div class="project-meta">
+            <p><em>client.</em> Echo Studio</p>
+            <p><em>product &amp; UX design  /</em>  studio oh( )hi</p>
+          </div>
+        </div>
+        <div class="pi ac w72">
+          <div class="iw">
+            <div class="ph r43 c6"><span class="ph-label">Wellness App Product Design</span></div>
+            <div class="tov to-right">
+              <p class="tov-cat"><span>Product Design</span></p>
+              <p class="tov-title"><span>Wellness App Product Design</span></p>
+              <p class="tov-desc"><span>Research-driven product design for a calming, intuitive wellness experience.</span></p>
+              <p class="tov-year"><span>2022</span></p>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <!-- left, 66% -->
+      <article class="project-entry">
+        <div class="project-header">
+          <h2 class="project-title">Editorial Publication Series</h2>
+          <p class="project-sub">Annual Print, Seoul &amp; London</p>
+          <div class="project-meta">
+            <p><em>client.</em> Parallel Press</p>
+            <p><em>editorial design  /</em>  studio oh( )hi</p>
+          </div>
+        </div>
+        <div class="pi al w66">
+          <div class="iw">
+            <div class="ph r169 c7"><span class="ph-label">Editorial Publication Series</span></div>
+            <div class="tov to-left">
+              <p class="tov-cat"><span>Editorial Design</span></p>
+              <p class="tov-title"><span>Editorial Publication Series</span></p>
+              <p class="tov-desc"><span>Typography-led annual publication exploring culture and technology with a distinctive visual voice.</span></p>
+              <p class="tov-year"><span>2022</span></p>
+            </div>
+          </div>
+        </div>
+      </article>
+
+    </section>
+
+  </main>
+
+  <script>
+    const io = new IntersectionObserver(
+      entries => entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); }),
+      { threshold: .08 }
+    );
+    document.querySelectorAll('.project-entry').forEach(el => io.observe(el));
+  </script>
+</body>
+</html>

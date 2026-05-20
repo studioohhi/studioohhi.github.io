@@ -9,22 +9,72 @@
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400;1,600;1,700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
   <style>
-    body { background: #fff; }
+    /* 1. Root Variables: 낭만적인 크림색을 덜어내고, 지적인 웜스톤/차콜로 변경 */
+:root {
+    --bg-stone: #f6f5f2; /* 차갑지도 가볍지도 않은, 묵직한 종이나 건축 마감재의 톤 */
+    --text-charcoal: #1a1a1a;
+    --line-hairline: rgba(26, 26, 26, 0.15); /* 도면의 그리드 역할을 할 얇은 선 */
+    
+    /* 대표님의 훌륭한 비대칭 여백 감각은 그대로 유지합니다 */
+    --px-l: 270px;
+    --px-r: 168px;
+}
 
-    #hero {
-      width: 100%;
-      height: 100vh;
-      position: relative;
-      overflow: hidden;
-      background: #fff;
+@media (max-width: 1024px) {
+    :root {
+        --px-l: 40px; /* 모바일에서는 여백 최소화 */
+        --px-r: 40px;
     }
-    #hero-canvas {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      display: block;
-    }
+}
+
+/* 2. Reset */
+*, *::before, *::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* 3. Body Architecture: Garamond를 버리고 이성적인 Sans-serif(고딕) 장착 */
+body {
+    background-color: var(--bg-stone);
+    color: var(--text-charcoal);
+    
+    /* Euclid Circular B 느낌을 내기 위한 시스템 기본 고딕 조합 */
+    /* 영문은 Inter/Helvetica 같은 이성적인 폰트로, 한글은 맑은고딕이나 애플고딕으로 떨어집니다 */
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+    
+    font-weight: 300; /* 글씨를 얇게(Light) 써서 지적인 느낌을 줍니다 */
+    line-height: 1.6;
+    overflow-x: hidden;
+    
+    /* 좌우 여백 적용 및 도면 같은 세로 가이드라인 추가 */
+    padding-left: var(--px-l);
+    padding-right: var(--px-r);
+    
+    /* [핵심] 화면 양옆을 가로지르는 얇은 세로선. 공간을 '가두는' 건축적 장치입니다. */
+    border-left: 1px solid var(--line-hairline);
+    border-right: 1px solid var(--line-hairline);
+    min-height: 100vh;
+}
+
+/* 4. Typography Rules: 글자의 자간(Letter-spacing)을 통제 */
+h1, h2, h3, .logo {
+    font-weight: 300;
+    letter-spacing: -0.03em; /* 제목은 자간을 좁혀서 단단하게 */
+}
+
+p, a, li {
+    font-weight: 300;
+    letter-spacing: -0.01em; 
+}
+
+/* 영문 대문자 메뉴나 캡션에 쓸 클래스 (매거진 느낌) */
+.caption-caps {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.15em; /* 대문자는 자간을 극단적으로 넓힘 */
+    color: #666;
+}
   </style>
 </head>
 <body>

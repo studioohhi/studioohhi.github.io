@@ -1,216 +1,328 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>oh( )hi</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400;1,600;1,700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css">
-  <style>
-    body { background: #fff; }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>oh( )hi — studio ohhi</title>
+<meta name="description" content="studio oh( )hi — Space planning, design & build, and community management. Seoul-based spatial design studio.">
+<style>
+@font-face{
+  font-family:'Euclid Circular B';
+  src:url('fonts/EuclidCircularB-Light.woff2') format('woff2');
+  font-weight:300;font-style:normal;font-display:swap;
+}
+@font-face{
+  font-family:'Euclid Circular B';
+  src:url('fonts/EuclidCircularB-Regular.woff2') format('woff2');
+  font-weight:400;font-style:normal;font-display:swap;
+}
+@font-face{
+  font-family:'Euclid Circular B';
+  src:url('fonts/EuclidCircularB-Medium.woff2') format('woff2');
+  font-weight:500;font-style:normal;font-display:swap;
+}
+@font-face{
+  font-family:'Euclid Circular B';
+  src:url('fonts/EuclidCircularB-Bold.woff2') format('woff2');
+  font-weight:700;font-style:normal;font-display:swap;
+}
+:root{
+  --navy:#0d1f2d;
+  --bg:#faf9f7;
+  --red:#e63222;
+  --muted:#888780;
+  --dot:#d9d9d9;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  background:var(--bg);
+  color:#000;
+  font-family:'Euclid Circular B',-apple-system,'Helvetica Neue',Arial,sans-serif;
+  -webkit-font-smoothing:antialiased;
+}
 
-    #hero {
-      width: 100%;
-      height: 100vh;
-      position: relative;
-      overflow: hidden;
-      background: #fff;
-    }
-    #hero-canvas {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      display: block;
-    }
-  </style>
+/* 1440x900 좌표계를 그대로 쓰는 캔버스. 화면 폭에 맞춰 스케일 */
+.stage{
+  position:relative;
+  width:100%;
+  max-width:1440px;
+  margin:0 auto;
+  aspect-ratio:1440/900;
+}
+.stage > *{position:absolute}
+#balls{left:0;top:0;width:100%;height:100%;z-index:0;pointer-events:none}
+.stage .tx, .stage .nav, .stage .logo, .stage .cta, .stage .slash{z-index:2}
+
+/* 좌표→% 변환 기준: left = x/1440, top = y/900 */
+
+/* 로고: x129 y41 246x78 */
+.logo{left:8.96%;top:4.56%;width:17.08%;color:var(--navy)}
+.logo-svg{width:100%;height:auto;display:block}
+
+/* 네비: 텍스트 baseline y91 → top 약 8.3%. about x925, work x1043, write x1147, contact x1254 */
+.nav{top:8.0%;font-weight:500;font-size:2.08vw;color:#000;white-space:nowrap}
+.nav.about{left:64.2%}
+.nav.work{left:72.4%}
+.nav.write{left:79.6%}
+.nav.contact{left:87.1%}
+@media(min-width:1440px){
+  .nav{font-size:30px}
+}
+
+/* dots (회색) — cx,cy,r 그대로 */
+.dot{border-radius:50%;background:var(--dot)}
+.d1{left:20.4%;top:42.4%;width:13.47%;aspect-ratio:1}      /* cx391 cy479 r97 */
+.d2{left:41.5%;top:53.8%;width:7.99%;aspect-ratio:1}       /* cx654 cy541 r57.5 */
+.d3{left:45.5%;top:40.0%;width:4.51%;aspect-ratio:1}       /* cx687 cy392 r32.5 */
+.d4{left:53.2%;top:62.0%;width:2.92%;aspect-ratio:1}       /* cx787 cy588 r21 */
+.d5{left:61.2%;top:61.6%;width:8.82%;aspect-ratio:1}       /* cx945 cy617 r63.5 */
+
+/* 텍스트 블록 — 각 그룹의 좌상단 좌표 기준 */
+.tx{color:#000;line-height:1.4}
+
+/* opening: 시작 x464 y224~240, 18px */
+.opening{left:32.2%;top:24.0%;font-size:1.25vw}
+/* headline: x393 y328~388, ~30px bold */
+.headline{left:27.3%;top:35.0%;font-size:2.08vw;font-weight:700;line-height:1.3}
+/* problems: x464 y463~499, 21px */
+.problems{left:32.2%;top:50.0%;font-size:1.46vw}
+/* solution: x520 y571~587, 21px bold (검정) */
+.solution{left:36.1%;top:62.5%;font-size:1.46vw;font-weight:700}
+/* service: x528 y611~683, 16px */
+.service{left:36.7%;top:67.0%;font-size:1.18vw;line-height:1.5}
+/* served: x371 y732~743, 21px */
+.served{left:25.8%;top:80.0%;font-size:1.46vw}
+
+@media(min-width:1440px){
+  .opening{font-size:18px}.headline{font-size:30px}
+  .problems,.solution,.served{font-size:21px}.service{font-size:17px}
+}
+
+/* CTA 박스 2개 + 슬래시 */
+.cta{
+  display:flex;align-items:center;justify-content:center;
+  border:1.5px solid #000;color:#000;font-weight:700;
+  text-decoration:none;font-size:1.32vw;
+}
+/* See our works more: x456 y803 243x57 */
+.cta1{left:31.7%;top:89.3%;width:16.88%;height:6.33%}
+/* Talk about project: x793 y803 243x57 */
+.cta2{left:55.1%;top:89.3%;width:16.88%;height:6.33%}
+/* 슬래시 x718-763 y790-872 */
+.slash{left:49.5%;top:86.5%;font-size:4vw;font-weight:300;transform:skewX(-12deg);color:#000}
+@media(min-width:1440px){
+  .cta{font-size:19px}.slash{font-size:58px}
+}
+
+/* 애니메이션 */
+.fade{opacity:0;transform:translateY(18px);transition:opacity .8s ease,transform .8s ease}
+.fade.in{opacity:1;transform:translateY(0)}
+.dotfade{opacity:0;transform:scale(.5);transition:opacity .9s ease,transform .9s ease}
+.dotfade.in{opacity:1;transform:scale(1)}
+
+/* 모바일: 절대배치 해제하고 세로 흐름 */
+@media(max-width:760px){
+  .stage{aspect-ratio:auto;max-width:none;padding:24px}
+  .stage > *{position:static!important;width:auto!important;height:auto!important;transform:none}
+  .logo{width:140px!important;margin-bottom:24px}
+  .logo-svg{width:100%}
+  .nav-wrap-m{display:flex;gap:16px;margin-bottom:40px}
+  .nav{font-size:15px!important;font-weight:500}
+  .dot{display:none}
+  #balls{display:none}
+  .tx{margin-bottom:24px}
+  .opening{font-size:14px!important}
+  .headline{font-size:24px!important}
+  .problems,.solution,.served,.service{font-size:15px!important}
+  .cta-m{display:flex;gap:12px;align-items:center;margin-top:20px}
+  .cta{font-size:14px!important;padding:12px 18px}
+  .slash{font-size:28px!important;transform:rotate(0deg) skewX(-12deg)}
+}
+@media(prefers-reduced-motion:reduce){.fade,.dotfade{transition:none;opacity:1;transform:none}}
+</style>
 </head>
-<body>
+<body id="top">
 
-  <nav>
-    <a class="logo" href="index.html">oh( )hi</a>
-    <ul class="nav-menu">
-      <li><a href="work.html"     data-palette="2">Work</a></li>
-      <li><a href="write.html"    data-palette="3">Write</a></li>
-      <li><a href="partners.html" data-palette="4">Partners</a></li>
-    </ul>
-  </nav>
+<div class="stage">
+  <canvas id="balls"></canvas>
+  <span class="logo fade" data-d="0"><svg class="logo-svg" viewBox="0 0 372.97 123.21" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M33.56,118.72C14.6,118.72,0,103.99,0,85.42s14.6-33.3,33.56-33.3,33.56,14.73,33.56,33.3-14.6,33.3-33.56,33.3ZM33.56,105.65c11.27,0,19.21-8.84,19.21-20.24s-7.94-20.23-19.21-20.23-19.34,8.84-19.34,20.23,7.94,20.24,19.34,20.24Z"/>
+<path d="M81.34,0h14.09v62.11c3.84-6.4,11.14-9.99,19.47-9.99,14.86,0,24.46,10.5,24.46,26.77v38.55h-14.09v-36.25c0-10.12-5.12-16.27-13.32-16.27-9.35,0-16.52,7.3-16.52,21.01v31.51h-14.09V0Z"/>
+<path d="M282.03.67h13.86v61.61c3.78-6.32,10.96-9.87,19.15-9.87,14.61,0,24.06,10.37,24.06,26.44v38.08h-13.86v-35.8c0-9.99-5.04-16.07-13.1-16.07-9.2,0-16.25,7.21-16.25,20.75v31.12h-13.86V.67Z"/>
+<path d="M363.78,39.89c-5.04,0-9.32-4.17-9.32-9.36s4.28-9.23,9.32-9.23,9.2,4.18,9.2,9.23-4.03,9.36-9.2,9.36ZM356.85,53.67h13.86v63.25h-13.86v-63.25Z"/>
+<path d="M160.34,67.24c6.78-18.64,20.26-32.68,36.18-39.93-18.6,1.96-36.28,16.01-43.95,37.1-7.68,21.09-3.17,43.22,9.82,56.67-7.53-15.78-8.83-35.21-2.04-53.84Z"/>
+<path d="M258.26,80.73c-5.4,19.08-17.81,34.08-33.15,42.48,18.41-3.32,35-18.63,41.11-40.23,6.11-21.6-.01-43.34-13.96-55.8,8.67,15.19,11.39,34.46,5.99,53.55Z"/></svg></span>
 
-  <section id="hero">
-    <canvas id="hero-canvas"></canvas>
-  </section>
+  <a class="nav about fade" data-d="100" href="#about">about</a>
+  <a class="nav work fade" data-d="160" href="#work">work</a>
+  <a class="nav write fade" data-d="220" href="#write">write</a>
+  <a class="nav contact fade" data-d="280" href="#contact">contact</a>
 
-  <script>
-  (() => {
-    const canvas = document.getElementById('hero-canvas');
-    const ctx    = canvas.getContext('2d');
+  <div class="tx opening fade" data-d="300">
+    Where brand meets space,<br>
+    where strategy meets operation,<br>
+    where people meet experience &ndash;
+  </div>
+  <div class="tx headline fade" data-d="900">
+    Before we design a space,<br>
+    we think about the relationships<br>
+    it will create.
+  </div>
+  <div class="tx problems fade" data-d="1600">
+    Beautiful, but gone too soon.<br>
+    Functional, but never remembered.<br>
+    Branded, but without its people.
+  </div>
+  <div class="tx solution fade" data-d="2100">
+    These are the gaps we know how to close.
+  </div>
+  <div class="tx service fade" data-d="2400">
+    From concept to construction &ndash;<br>
+    and we find the right people and programs<br>
+    to bring each space to life.
+  </div>
+  <div class="tx served fade" data-d="2700">
+    so we served &ndash; Space Planning &middot; Design &amp; Build &middot; Community Management
+  </div>
 
-    function resize() {
-      canvas.width  = canvas.offsetWidth;
-      canvas.height = canvas.offsetHeight;
+  <a class="cta cta1 fade" data-d="3100" href="#work">See our works more</a>
+  <span class="slash fade" data-d="3100">/</span>
+  <a class="cta cta2 fade" data-d="3100" href="#contact" onclick="return false">Talk about project</a>
+</div>
+
+<script>
+window.addEventListener('load',function(){
+  document.querySelectorAll('.fade,.dotfade').forEach(function(el){
+    var d=parseInt(el.getAttribute('data-d'))||0;
+    setTimeout(function(){el.classList.add('in')},d);
+  });
+});
+</script>
+
+
+
+<script>
+(() => {
+  const canvas = document.getElementById('balls');
+  if(!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const stage = canvas.parentElement;
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+
+  function resize() {
+    const rect = stage.getBoundingClientRect();
+    canvas.width  = rect.width  * dpr;
+    canvas.height = rect.height * dpr;
+    canvas.style.width  = rect.width + 'px';
+    canvas.style.height = rect.height + 'px';
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+    canvas._w = rect.width;
+    canvas._h = rect.height;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  /* Brand palette: 대부분 회색, 포인트로 ohhi 레드/네이비 */
+  const VIVID = [
+    '#f2c200',  // 0  옐로우
+    '#e63222',  // 1  레드
+    '#d9d9d9',  // 2  그레이
+    '#0d1f2d',  // 3  네이비
+  ];
+
+
+
+  function hexToRgb(hex){const n=parseInt(hex.slice(1),16);return [(n>>16)&255,(n>>8)&255,n&255];}
+  function lerpColor(fromHex,toHex,t){
+    const a=hexToRgb(fromHex), b=hexToRgb(toHex);
+    if(fromHex.startsWith('rgb')){ /* already rgb string fallback */ }
+    const r=Math.round(a[0]+(b[0]-a[0])*t);
+    const g=Math.round(a[1]+(b[1]-a[1])*t);
+    const bv=Math.round(a[2]+(b[2]-a[2])*t);
+    return `rgb(${r},${g},${bv})`;
+  }
+  function toRgb(hex){const c=hexToRgb(hex);return `rgb(${c[0]},${c[1]},${c[2]})`;}
+  function lerpRgb(fromRgb,toHex,t){
+    const a=fromRgb.match(/\d+/g).map(Number);
+    const b=hexToRgb(toHex);
+    const r=Math.round(a[0]+(b[0]-a[0])*t);
+    const g=Math.round(a[1]+(b[1]-a[1])*t);
+    const bv=Math.round(a[2]+(b[2]-a[2])*t);
+    return `rgb(${r},${g},${bv})`;
+  }
+
+  class Ball {
+    constructor(){
+      this.paletteIndex = Math.floor(Math.random()*VIVID.length);
+      this.r = Math.random()*82 + 34;
+      this.alpha = .88 + Math.random()*.12;
+      this.displayColor = toRgb(VIVID[this.paletteIndex]);
+      const W=canvas._w, H=canvas._h;
+      const roll=Math.random(), spd=(Math.random()*10+7)*1.1;
+      if(roll<.6){ this.x=Math.random()*W; this.y=-this.r*1.5; this.vx=(Math.random()-.5)*spd*1.2; this.vy=spd*(.4+Math.random()*.8); }
+      else if(roll<.78){ this.x=W+this.r; this.y=Math.random()*H*.75; this.vx=-spd*(.5+Math.random()*.7); this.vy=(Math.random()-.3)*spd; }
+      else { this.x=-this.r; this.y=Math.random()*H*.75; this.vx=spd*(.5+Math.random()*.7); this.vy=(Math.random()-.3)*spd; }
     }
-    resize();
-    window.addEventListener('resize', resize);
-
-    /* ── Color palette: white → #170A8A in 5 steps ── */
-    const VIVID = [
-      '#FFFFFF',   // 0
-      '#C5C2E2',   // 1
-      '#8B85C5',   // 2  → Work
-      '#5148A8',   // 3  → Write
-      '#170A8A',   // 4  → Partners
-    ];
-
-    /* Settled gray tones matching luminosity of each vivid step */
-    const GRAY = [
-      '#888888',
-      '#787880',
-      '#686870',
-      '#585866',
-      '#484858',
-    ];
-
-    /* ── State ── */
-    let settlePhase = false;
-    let hoveredPalette = -1;   // -1 = none; 0–4 = active palette index
-
-    setTimeout(() => { settlePhase = true; }, 5500);
-
-    /* ── Nav hover wiring ── */
-    document.querySelectorAll('.nav-menu a[data-palette]').forEach(el => {
-      const idx = parseInt(el.dataset.palette, 10);
-      el.addEventListener('mouseenter', () => { hoveredPalette = idx; });
-      el.addEventListener('mouseleave', () => { hoveredPalette = -1; });
-    });
-
-    /* ── Color helpers ── */
-    function hexToRgb(hex) {
-      const n = parseInt(hex.slice(1), 16);
-      return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
+    targetColor(){
+      return VIVID[this.paletteIndex];
     }
-
-    function lerpColor(fromHex, toHex, t) {
-      const a = hexToRgb(fromHex), b = hexToRgb(toHex);
-      const r = Math.round(a[0] + (b[0] - a[0]) * t);
-      const g = Math.round(a[1] + (b[1] - a[1]) * t);
-      const bv = Math.round(a[2] + (b[2] - a[2]) * t);
-      return `rgb(${r},${g},${bv})`;
-    }
-
-    /* ── Ball ── */
-    const TRAIL = 10;
-
-    class Ball {
-      constructor() {
-        this.paletteIndex = Math.floor(Math.random() * VIVID.length);
-        this.r     = Math.random() * 58 + 16;
-        this.alpha = .88 + Math.random() * .12;
-        this.trail = [];
-
-        /* current rendered color (lerped each frame) */
-        this.displayColor = VIVID[this.paletteIndex];
-
-        const roll = Math.random();
-        const spd  = Math.random() * 10 + 7;
-        if (roll < .6) {
-          this.x = Math.random() * canvas.width;
-          this.y = -this.r * 1.5;
-          this.vx = (Math.random() - .5) * spd * 1.2;
-          this.vy = spd * (.4 + Math.random() * .8);
-        } else if (roll < .78) {
-          this.x = canvas.width + this.r;
-          this.y = Math.random() * canvas.height * .75;
-          this.vx = -spd * (.5 + Math.random() * .7);
-          this.vy = (Math.random() - .3) * spd;
-        } else {
-          this.x = -this.r;
-          this.y = Math.random() * canvas.height * .75;
-          this.vx = spd * (.5 + Math.random() * .7);
-          this.vy = (Math.random() - .3) * spd;
-        }
-      }
-
-      targetColor() {
-        if (!settlePhase) return VIVID[this.paletteIndex];
-        /* If a nav item is hovered, balls matching that palette index become vivid */
-        if (hoveredPalette !== -1 && this.paletteIndex === hoveredPalette) {
-          return VIVID[this.paletteIndex];
-        }
-        return GRAY[this.paletteIndex];
-      }
-
-      update(all) {
-        this.trail.push({ x: this.x, y: this.y });
-        if (this.trail.length > TRAIL) this.trail.shift();
-
-        /* Lerp display color toward target */
-        const target = this.targetColor();
-        this.displayColor = lerpColor(this.displayColor, target, 0.06);
-
-        this.vy += .18;
-        this.vx *= .989; this.vy *= .989;
-        this.x += this.vx; this.y += this.vy;
-
-        const cw = canvas.width, ch = canvas.height, r = this.r, e = .68;
-        if (this.x - r < 0)  { this.x = r;    this.vx =  Math.abs(this.vx) * e; }
-        if (this.x + r > cw) { this.x = cw-r; this.vx = -Math.abs(this.vx) * e; }
-        if (this.y - r < 0)  { this.y = r;    this.vy =  Math.abs(this.vy) * e; }
-        if (this.y + r > ch) { this.y = ch-r; this.vy = -Math.abs(this.vy) * e; }
-
-        for (const o of all) {
-          if (o === this) continue;
-          const dx = o.x - this.x, dy = o.y - this.y;
-          const d  = Math.hypot(dx, dy), mn = this.r + o.r;
-          if (d >= mn || d === 0) continue;
-          const nx = dx/d, ny = dy/d, ov = (mn-d)*.5;
-          this.x -= nx*ov; this.y -= ny*ov;
-          o.x    += nx*ov; o.y    += ny*ov;
-          const dvx = this.vx - o.vx, dvy = this.vy - o.vy;
-          const dot = dvx*nx + dvy*ny;
-          if (dot <= 0) continue;
-          const m1 = this.r*this.r, m2 = o.r*o.r, tm = m1+m2;
-          const imp = (2*dot*.74)/tm;
-          this.vx -= imp*m2*nx; this.vy -= imp*m2*ny;
-          o.vx    += imp*m1*nx; o.vy    += imp*m1*ny;
-        }
-      }
-
-      draw() {
-        /* Ghost trail: outline circles */
-        for (let i = 0; i < this.trail.length; i++) {
-          const t  = (i+1) / this.trail.length;
-          const pt = this.trail[i];
-          ctx.save();
-          ctx.globalAlpha = t * t * .28;
-          ctx.beginPath();
-          ctx.arc(pt.x, pt.y, this.r, 0, Math.PI*2);
-          ctx.strokeStyle = this.displayColor;
-          ctx.lineWidth   = 1.2;
-          ctx.stroke();
-          ctx.restore();
-        }
-        /* Main ball: flat fill */
-        ctx.save();
-        ctx.globalAlpha = this.alpha;
-        ctx.beginPath();
-        ctx.arc(this.x, this.y, this.r, 0, Math.PI*2);
-        ctx.fillStyle = this.displayColor;
-        ctx.fill();
-        ctx.restore();
+    update(all){
+      this.displayColor = lerpRgb(this.displayColor, this.targetColor(), 0.06);
+      this.vy += .18;
+      this.vx *= .989; this.vy *= .989;
+      this.x += this.vx; this.y += this.vy;
+      const cw=canvas._w, ch=canvas._h, r=this.r, e=.68;
+      if(this.x-r<0){ this.x=r; this.vx=Math.abs(this.vx)*e; }
+      if(this.x+r>cw){ this.x=cw-r; this.vx=-Math.abs(this.vx)*e; }
+      if(this.y-r<0){ this.y=r; this.vy=Math.abs(this.vy)*e; }
+      if(this.y+r>ch){ this.y=ch-r; this.vy=-Math.abs(this.vy)*e; }
+      for(const o of all){
+        if(o===this) continue;
+        const dx=o.x-this.x, dy=o.y-this.y;
+        const d=Math.hypot(dx,dy), mn=this.r+o.r;
+        if(d>=mn||d===0) continue;
+        const nx=dx/d, ny=dy/d, ov=(mn-d)*.5;
+        this.x-=nx*ov; this.y-=ny*ov; o.x+=nx*ov; o.y+=ny*ov;
+        const dvx=this.vx-o.vx, dvy=this.vy-o.vy;
+        const dot=dvx*nx+dvy*ny;
+        if(dot<=0) continue;
+        const m1=this.r*this.r, m2=o.r*o.r, tm=m1+m2;
+        const imp=(2*dot*.74)/tm;
+        this.vx-=imp*m2*nx; this.vy-=imp*m2*ny;
+        o.vx+=imp*m1*nx; o.vy+=imp*m1*ny;
       }
     }
+    draw(){
+      ctx.save();
+      ctx.globalAlpha = this.alpha;
+      ctx.beginPath();
+      ctx.arc(this.x,this.y,this.r,0,Math.PI*2);
+      ctx.fillStyle=this.displayColor;
+      ctx.fill();
+      ctx.restore();
+    }
+  }
 
-    const balls = [];
-    for (let i = 0; i < 20; i++) setTimeout(() => balls.push(new Ball()), i * 100);
+  const reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const balls = [];
 
-    (function loop() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      for (const b of balls) { b.update(balls); b.draw(); }
+  if(reduce){
+    for(let i=0;i<18;i++){
+      const b=new Ball();
+      b.x=Math.random()*canvas._w; b.y=Math.random()*canvas._h;
+      b.vx=0; b.vy=0; balls.push(b);
+    }
+    ctx.clearRect(0,0,canvas._w,canvas._h);
+    for(const b of balls){ b.displayColor=toRgb(VIVID[b.paletteIndex]); b.draw(); }
+  } else {
+    for(let i=0;i<30;i++) setTimeout(()=>balls.push(new Ball()), i*80);
+    (function loop(){
+      ctx.clearRect(0,0,canvas._w,canvas._h);
+      for(const b of balls){ b.update(balls); b.draw(); }
       requestAnimationFrame(loop);
     })();
-  })();
-  </script>
+  }
+})();
+</script>
 </body>
 </html>

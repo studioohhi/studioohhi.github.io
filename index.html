@@ -51,17 +51,18 @@ body{
   aspect-ratio:1440/900;
 }
 .stage > *{position:absolute}
-#balls{left:0;top:0;width:100%;height:100%;z-index:0;pointer-events:none}
+#balls{position:fixed;left:0;top:0;width:100vw;height:100vh;z-index:0;pointer-events:none}
 .stage .tx, .stage .nav, .stage .logo, .stage .cta, .stage .slash{z-index:2}
 
 /* 좌표→% 변환 기준: left = x/1440, top = y/900 */
 
 /* 로고: x129 y41 246x78 */
-.logo{left:8.96%;top:4.56%;width:17.08%;color:var(--navy)}
+.logo{left:8.96%;top:4.56%;width:17.08%;color:var(--navy);cursor:pointer;display:block}
 .logo-svg{width:100%;height:auto;display:block}
 
 /* 네비: 텍스트 baseline y91 → top 약 8.3%. about x925, work x1043, write x1147, contact x1254 */
-.nav{top:8.0%;font-weight:500;font-size:2.08vw;color:#000;white-space:nowrap}
+.nav{top:8.0%;font-weight:500;font-size:2.08vw;color:#000;white-space:nowrap;text-decoration:none}
+.nav:hover{text-decoration:underline;text-underline-offset:6px;text-decoration-thickness:2px}
 .nav.about{left:64.2%}
 .nav.work{left:72.4%}
 .nav.write{left:79.6%}
@@ -116,87 +117,156 @@ body{
 }
 
 /* 애니메이션 */
-.fade{opacity:0;transform:translateY(18px);transition:opacity .8s ease,transform .8s ease}
+.fade{opacity:0;transform:translateY(18px);transition:opacity .5s ease,transform .5s ease}
+.tx.fade{transition:opacity .6s ease,transform .6s ease}
 .fade.in{opacity:1;transform:translateY(0)}
 .dotfade{opacity:0;transform:scale(.5);transition:opacity .9s ease,transform .9s ease}
 .dotfade.in{opacity:1;transform:scale(1)}
 
 /* 모바일: 절대배치 해제하고 세로 흐름 */
 @media(max-width:760px){
-  .stage{aspect-ratio:auto;max-width:none;padding:24px}
+  /* 공 효과 유지 (JS에서 모바일은 작게/적게) */
+  #balls{display:block}
+
+  /* 한 화면(iPhone 17 Pro ~874pt) 안에 전부 들어가도록 압축 */
+  .stage{
+    aspect-ratio:auto;max-width:none;
+    min-height:100vh;height:100vh;
+    padding:16px 22px;
+    display:flex;flex-direction:column;
+    justify-content:flex-start;align-items:center;
+    text-align:center;
+    overflow:hidden;
+  }
   .stage > *{position:static!important;width:auto!important;height:auto!important;transform:none}
-  .logo{width:140px!important;margin-bottom:24px}
+
+  /* 로고: 가운데, 약간 작게 */
+  .logo{width:118px!important;margin:4px auto 14px!important;display:block}
   .logo-svg{width:100%}
-  .nav-wrap-m{display:flex;gap:16px;margin-bottom:40px}
-  .nav{font-size:15px!important;font-weight:500}
-  .dot{display:none}
-  #balls{display:none}
-  .tx{margin-bottom:24px}
-  .opening{font-size:14px!important}
-  .headline{font-size:24px!important}
-  .problems,.solution,.served,.service{font-size:15px!important}
-  .cta-m{display:flex;gap:12px;align-items:center;margin-top:20px}
-  .cta{font-size:14px!important;padding:12px 18px}
-  .slash{font-size:28px!important;transform:rotate(0deg) skewX(-12deg)}
-}
-@media(prefers-reduced-motion:reduce){.fade,.dotfade{transition:none;opacity:1;transform:none}}
+
+  /* 메뉴: 직전(30px)에서 20% 축소 → 24px, 가운데, 간격 */
+  .nav{
+    display:inline-block;
+    font-size:24px!important;font-weight:500;text-decoration:none;
+    margin:0 10px;line-height:1.4;
+  }
+  .nav:hover{text-decoration:underline;text-underline-offset:5px;text-decoration-thickness:2px}
+
+  /* 메뉴 묶음 아래 간격 (본문과 분리) — 메뉴 마지막 줄 뒤 여백 */
+  .nav.contact{margin-bottom:0}
+
+  /* 가운데 텍스트: 내용은 좌측정렬, 블록은 화면 중앙 배치 */
+  .tx{
+    text-align:left;
+    margin:0 auto;
+    max-width:330px;          /* 좁은 폭으로 가운데 모이게 */
+    width:100%;
+  }
+  .opening{margin-top:22px!important;margin-bottom:12px!important;font-size:12.5px!important;line-height:1.5!important}
+  .headline{font-size:20px!important;font-weight:700;line-height:1.25!important;margin-bottom:14px!important}
+  .problems{font-size:12.5px!important;line-height:1.55!important;margin-bottom:10px!important}
+  .solution{font-size:12.5px!important;font-weight:700;margin-bottom:12px!important}
+  .service{font-size:12.5px!important;line-height:1.5!important;margin-bottom:10px!important}
+  .served{font-size:12px!important;line-height:1.5!important;margin-bottom:0!important}
+
+  /* 버튼 영역: 메뉴~버튼 간격 확보 위해 위로 margin, 가운데 */
+  .cta{
+    display:inline-block!important;
+    font-size:14px!important;
+    padding:9px 20px!important;
+    margin:5px auto!important;width:auto!important;text-align:center;
+  }
+  .cta.cta1{margin-top:18px!important}
+  .slash{font-size:22px!important;transform:skewX(-12deg);margin:1px auto!important;display:block}
+
+  .tx,.nav,.logo,.cta,.slash{position:relative;z-index:2}
+
+  /* 모바일: 페이드로 인해 안 보이는 문제 방지 — 항상 표시 */
+  .fade{opacity:1!important;transform:none!important}
+}@media(prefers-reduced-motion:reduce){.fade,.dotfade{transition:none;opacity:1;transform:none}}
 </style>
 </head>
 <body id="top">
 
 <div class="stage">
   <canvas id="balls"></canvas>
-  <span class="logo fade" data-d="0"><svg class="logo-svg" viewBox="0 0 372.97 123.21" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M33.56,118.72C14.6,118.72,0,103.99,0,85.42s14.6-33.3,33.56-33.3,33.56,14.73,33.56,33.3-14.6,33.3-33.56,33.3ZM33.56,105.65c11.27,0,19.21-8.84,19.21-20.24s-7.94-20.23-19.21-20.23-19.34,8.84-19.34,20.23,7.94,20.24,19.34,20.24Z"/>
+  <a href="#top" class="logo fade" data-d="800" aria-label="home" onclick="window.scrollTo(0,0); if(window.ohhiRespawn)window.ohhiRespawn(); if(window.ohhiReplay)window.ohhiReplay(); return false;"><svg class="logo-svg" viewBox="0 0 372.97 123.21" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M33.56,118.72C14.6,118.72,0,103.99,0,85.42s14.6-33.3,33.56-33.3,33.56,14.73,33.56,33.3-14.6,33.3-33.56,33.3ZM33.56,105.65c11.27,0,19.21-8.84,19.21-20.24s-7.94-20.23-19.21-20.23-19.34,8.84-19.34,20.23,7.94,20.24,19.34,20.24Z"/>
 <path d="M81.34,0h14.09v62.11c3.84-6.4,11.14-9.99,19.47-9.99,14.86,0,24.46,10.5,24.46,26.77v38.55h-14.09v-36.25c0-10.12-5.12-16.27-13.32-16.27-9.35,0-16.52,7.3-16.52,21.01v31.51h-14.09V0Z"/>
 <path d="M282.03.67h13.86v61.61c3.78-6.32,10.96-9.87,19.15-9.87,14.61,0,24.06,10.37,24.06,26.44v38.08h-13.86v-35.8c0-9.99-5.04-16.07-13.1-16.07-9.2,0-16.25,7.21-16.25,20.75v31.12h-13.86V.67Z"/>
 <path d="M363.78,39.89c-5.04,0-9.32-4.17-9.32-9.36s4.28-9.23,9.32-9.23,9.2,4.18,9.2,9.23-4.03,9.36-9.2,9.36ZM356.85,53.67h13.86v63.25h-13.86v-63.25Z"/>
 <path d="M160.34,67.24c6.78-18.64,20.26-32.68,36.18-39.93-18.6,1.96-36.28,16.01-43.95,37.1-7.68,21.09-3.17,43.22,9.82,56.67-7.53-15.78-8.83-35.21-2.04-53.84Z"/>
-<path d="M258.26,80.73c-5.4,19.08-17.81,34.08-33.15,42.48,18.41-3.32,35-18.63,41.11-40.23,6.11-21.6-.01-43.34-13.96-55.8,8.67,15.19,11.39,34.46,5.99,53.55Z"/></svg></span>
+<path d="M258.26,80.73c-5.4,19.08-17.81,34.08-33.15,42.48,18.41-3.32,35-18.63,41.11-40.23,6.11-21.6-.01-43.34-13.96-55.8,8.67,15.19,11.39,34.46,5.99,53.55Z"/></svg></a>
 
-  <a class="nav about fade" data-d="100" href="#about">about</a>
-  <a class="nav work fade" data-d="160" href="#work">work</a>
-  <a class="nav write fade" data-d="220" href="#write">write</a>
-  <a class="nav contact fade" data-d="280" href="#contact">contact</a>
+  <a class="nav about fade" data-d="850" href="#about">about</a>
+  <a class="nav work fade" data-d="920" href="#work">work</a>
+  <a class="nav write fade" data-d="990" href="#write">write</a>
+  <a class="nav contact fade" data-d="1060" href="#contact">contact</a>
 
-  <div class="tx opening fade" data-d="300">
+  <div class="tx opening fade" data-d="1750">
     Where brand meets space,<br>
     where strategy meets operation,<br>
     where people meet experience &ndash;
   </div>
-  <div class="tx headline fade" data-d="900">
+  <div class="tx headline fade" data-d="1750">
     Before we design a space,<br>
     we think about the relationships<br>
     it will create.
   </div>
-  <div class="tx problems fade" data-d="1600">
+  <div class="tx problems fade" data-d="1750">
     Beautiful, but gone too soon.<br>
     Functional, but never remembered.<br>
     Branded, but without its people.
   </div>
-  <div class="tx solution fade" data-d="2100">
+  <div class="tx solution fade" data-d="1750">
     These are the gaps we know how to close.
   </div>
-  <div class="tx service fade" data-d="2400">
+  <div class="tx service fade" data-d="1750">
     From concept to construction &ndash;<br>
     and we find the right people and programs<br>
     to bring each space to life.
   </div>
-  <div class="tx served fade" data-d="2700">
+  <div class="tx served fade" data-d="1750">
     so we served &ndash; Space Planning &middot; Design &amp; Build &middot; Community Management
   </div>
 
-  <a class="cta cta1 fade" data-d="3100" href="#work">See our works more</a>
-  <span class="slash fade" data-d="3100">/</span>
-  <a class="cta cta2 fade" data-d="3100" href="#contact" onclick="return false">Talk about project</a>
+  <a class="cta cta1 fade" data-d="1300" href="#work">See our works more</a>
+  <span class="slash fade" data-d="1380">/</span>
+  <a class="cta cta2 fade" data-d="1300" href="#contact" onclick="return false">Talk about project</a>
 </div>
 
 <script>
-window.addEventListener('load',function(){
-  document.querySelectorAll('.fade,.dotfade').forEach(function(el){
+function isMobileView(){ return window.innerWidth <= 760; }
+function playFadeIn(){
+  var els = document.querySelectorAll('.fade');
+  if(isMobileView()){
+    // 모바일: 애니메이션 없이 전부 즉시 표시 (사라짐 방지)
+    els.forEach(function(el){ el.classList.add('in'); });
+    return;
+  }
+  els.forEach(function(el){ el.classList.remove('in'); });
+  void document.body.offsetWidth;
+  els.forEach(function(el){
     var d=parseInt(el.getAttribute('data-d'))||0;
     setTimeout(function(){el.classList.add('in')},d);
   });
-});
+}
+window.addEventListener('load', playFadeIn);
+window.ohhiReplay = playFadeIn;
+// 리사이즈로 데스크톱↔모바일 전환 시에도 표시 상태 보정
+(function(){
+  var lastMobile = isMobileView();
+  window.addEventListener('resize', function(){
+    var nowMobile = isMobileView();
+    if(nowMobile){
+      // 모바일로 가면 무조건 전부 표시
+      document.querySelectorAll('.fade').forEach(function(el){ el.classList.add('in'); });
+    } else if(lastMobile && !nowMobile){
+      // 모바일→데스크톱 복귀: 표시 상태 유지 (이미 .in 있음)
+      document.querySelectorAll('.fade').forEach(function(el){ el.classList.add('in'); });
+    }
+    lastMobile = nowMobile;
+  });
+})();
 </script>
 
 
@@ -208,16 +278,17 @@ window.addEventListener('load',function(){
   const ctx = canvas.getContext('2d');
   const stage = canvas.parentElement;
   const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  const isMobile = () => window.innerWidth <= 760;
 
   function resize() {
-    const rect = stage.getBoundingClientRect();
-    canvas.width  = rect.width  * dpr;
-    canvas.height = rect.height * dpr;
-    canvas.style.width  = rect.width + 'px';
-    canvas.style.height = rect.height + 'px';
+    const w = window.innerWidth, h = window.innerHeight;
+    canvas.width  = w * dpr;
+    canvas.height = h * dpr;
+    canvas.style.width  = w + 'px';
+    canvas.style.height = h + 'px';
     ctx.setTransform(dpr,0,0,dpr,0,0);
-    canvas._w = rect.width;
-    canvas._h = rect.height;
+    canvas._w = w;
+    canvas._h = h;
   }
   resize();
   window.addEventListener('resize', resize);
@@ -227,7 +298,7 @@ window.addEventListener('load',function(){
     '#f2c200',  // 0  옐로우
     '#e63222',  // 1  레드
     '#d9d9d9',  // 2  그레이
-    '#0d1f2d',  // 3  네이비
+    '#12466D',  // 3  네이비
   ];
 
 
@@ -254,7 +325,8 @@ window.addEventListener('load',function(){
   class Ball {
     constructor(){
       this.paletteIndex = Math.floor(Math.random()*VIVID.length);
-      this.r = Math.random()*82 + 34;
+      this.baseRatio = Math.random();  // 0~1, 크기 다양성
+      this.r = this.computeR();
       this.alpha = .88 + Math.random()*.12;
       this.displayColor = toRgb(VIVID[this.paletteIndex]);
       const W=canvas._w, H=canvas._h;
@@ -263,10 +335,16 @@ window.addEventListener('load',function(){
       else if(roll<.78){ this.x=W+this.r; this.y=Math.random()*H*.75; this.vx=-spd*(.5+Math.random()*.7); this.vy=(Math.random()-.3)*spd; }
       else { this.x=-this.r; this.y=Math.random()*H*.75; this.vx=spd*(.5+Math.random()*.7); this.vy=(Math.random()-.3)*spd; }
     }
+    computeR(){
+      return isMobile()
+        ? (this.baseRatio*34 + 16)
+        : (this.baseRatio*68.88 + 28.56);
+    }
     targetColor(){
       return VIVID[this.paletteIndex];
     }
     update(all){
+      this.r = this.computeR();
       this.displayColor = lerpRgb(this.displayColor, this.targetColor(), 0.06);
       this.vy += .18;
       this.vx *= .989; this.vy *= .989;
@@ -315,7 +393,19 @@ window.addEventListener('load',function(){
     ctx.clearRect(0,0,canvas._w,canvas._h);
     for(const b of balls){ b.displayColor=toRgb(VIVID[b.paletteIndex]); b.draw(); }
   } else {
-    for(let i=0;i<30;i++) setTimeout(()=>balls.push(new Ball()), i*80);
+    window._ballTimers = window._ballTimers || [];
+    function spawnBalls(){
+      // 기존 공·타이머 제거
+      window._ballTimers.forEach(clearTimeout);
+      window._ballTimers = [];
+      balls.length = 0;
+      var count = isMobile() ? 14 : 30;
+      for(let i=0;i<count;i++){
+        window._ballTimers.push(setTimeout(()=>balls.push(new Ball()), i*80));
+      }
+    }
+    spawnBalls();
+    window.ohhiRespawn = spawnBalls;
     (function loop(){
       ctx.clearRect(0,0,canvas._w,canvas._h);
       for(const b of balls){ b.update(balls); b.draw(); }

@@ -1,0 +1,2548 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no" />
+<title>漢字 3級 플래시카드</title>
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-title" content="漢字 3級" />
+<meta name="apple-mobile-web-app-status-bar-style" content="default" />
+<meta name="theme-color" content="#F3F4F6" media="(prefers-color-scheme: light)" />
+<meta name="theme-color" content="#0D1016" media="(prefers-color-scheme: dark)" />
+<link rel="apple-touch-icon" href="icon-180.png" />
+<link rel="icon" href="icon-192.png" />
+<link rel="manifest" href="manifest.webmanifest" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Noto+Serif+KR:wght@300;400&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --brand:#002A86;
+    --on-brand:#FFFFFF;
+    --brand-tint:#ECEFF7;
+    --brand-soft:#C7D2EA;
+    --ink:#14171C;
+    --ink-2:#333A46;
+    --canvas:#F3F4F6;
+    --sheet:#FFFFFF;
+    --line:#E2E3E5;
+    --line-soft:#ECEDEF;
+    --muted:#8A8F9B;
+    --muted-2:#646A76;
+    --ok:#0E6B4F;
+    --ok-tint:#E7F2EC;
+    --no:#B72C2C;
+    --no-tint:#FAEBEA;
+    --sans:'Inter','Helvetica Neue','Apple SD Gothic Neo',sans-serif;
+    --mono:'JetBrains Mono',ui-monospace,Menlo,monospace;
+    --serif:'Noto Serif KR','AppleMyungjo','Nanum Myeongjo',Batang,serif;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --brand:#8FABE8; --on-brand:#0D1016; --brand-tint:#182233; --brand-soft:#2E3C58;
+      --ink:#E9ECF1; --ink-2:#C3C9D4;
+      --canvas:#0D1016; --sheet:#141922;
+      --line:#262C38; --line-soft:#1C212A;
+      --muted:#79818F; --muted-2:#9AA2B0;
+      --ok:#4FC79B; --ok-tint:#132A23; --no:#F0867E; --no-tint:#2B1A19;
+    }
+  }
+  :root[data-theme="dark"]{
+    --brand:#8FABE8; --on-brand:#0D1016; --brand-tint:#182233; --brand-soft:#2E3C58;
+    --ink:#E9ECF1; --ink-2:#C3C9D4;
+    --canvas:#0D1016; --sheet:#141922;
+    --line:#262C38; --line-soft:#1C212A;
+    --muted:#79818F; --muted-2:#9AA2B0;
+    --ok:#4FC79B; --ok-tint:#132A23; --no:#F0867E; --no-tint:#2B1A19;
+  }
+
+  *{ box-sizing:border-box; margin:0; padding:0; }
+  html{ height:100%; -webkit-text-size-adjust:100%; }
+  body{
+    position:fixed; inset:0; overflow:hidden; overscroll-behavior:none;
+    background:var(--canvas); color:var(--ink);
+    font-family:var(--sans); font-size:15px; line-height:1.45; letter-spacing:-0.005em;
+    -webkit-font-smoothing:antialiased;
+    -webkit-tap-highlight-color:transparent;
+    -webkit-user-select:none; user-select:none; touch-action:manipulation;
+  }
+  button,select{ font:inherit; color:inherit; background:transparent; border:0; cursor:pointer; }
+  :focus-visible{ outline:2px solid var(--brand); outline-offset:2px; }
+  .mono{ font-family:var(--mono); letter-spacing:0; font-variant-numeric:tabular-nums; }
+
+  /* ---------- app shell ---------- */
+  .app{
+    height:100%; max-width:600px; margin:0 auto;
+    display:grid; grid-template-rows:auto minmax(0,1fr) auto;
+    padding:calc(env(safe-area-inset-top) + 12px) 14px calc(env(safe-area-inset-bottom) + 12px);
+  }
+
+  /* ---------- header ---------- */
+  .hd{ display:flex; flex-direction:column; gap:9px; padding-bottom:11px; }
+  .hd-row{ display:flex; align-items:center; gap:8px; }
+  .title{ font-family:var(--serif); font-weight:400; font-size:17px; letter-spacing:0.03em; }
+  .counter{
+    margin-left:auto; font-family:var(--mono); font-size:11px; color:var(--muted);
+    letter-spacing:0.02em; display:flex; gap:10px; align-items:baseline;
+  }
+  .counter b{ color:var(--ink); font-weight:500; }
+  .counter .ok{ color:var(--ok); }
+  .counter .no{ color:var(--no); }
+
+  .seg{ display:flex; border:1px solid var(--line); border-radius:8px; overflow:hidden; background:var(--sheet); flex:0 0 auto; }
+  .seg button{ padding:8px 14px; font-size:13px; color:var(--muted-2); border-right:1px solid var(--line); }
+  .seg button:last-child{ border-right:0; }
+  .seg button[aria-selected="true"]{ background:var(--brand); color:var(--on-brand); }
+
+  .sel{ position:relative; flex:1 1 auto; display:flex; }
+  .sel select{
+    appearance:none; width:100%; padding:10px 32px 10px 12px;
+    border:1px solid var(--line); border-radius:8px; background:var(--sheet);
+    font-family:var(--mono); font-size:13px;
+  }
+  .sel::after{
+    content:''; position:absolute; right:13px; top:50%; width:6px; height:6px;
+    border-right:1.5px solid var(--muted-2); border-bottom:1.5px solid var(--muted-2);
+    transform:translateY(-5px) rotate(45deg); pointer-events:none;
+  }
+  .dirbtn{
+    flex:0 0 auto; padding:10px 12px; border:1px solid var(--line); border-radius:8px;
+    background:var(--sheet); font-size:12.5px; color:var(--muted-2);
+    display:flex; align-items:center; gap:6px; white-space:nowrap;
+  }
+  .dirbtn .sw{ font-family:var(--mono); color:var(--brand); font-size:12px; }
+
+  /* ---------- stage ---------- */
+  .stage{ position:relative; min-height:0; display:flex; }
+  .view{ flex:1; min-height:0; display:none; }
+  .view.on{ display:flex; }
+
+  .card{
+    flex:1; min-height:0;
+    background:var(--sheet); border:1px solid var(--line); border-radius:12px;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    gap:14px; padding:20px; text-align:center; overflow:hidden;
+  }
+  .card.is-marked{ border-color:var(--brand-soft); }
+  .glyph{
+    font-family:var(--serif); font-weight:300; line-height:1;
+    font-size:min(42vmin, 180px); color:var(--ink);
+  }
+  .glyph.sm{ font-size:min(28vmin, 120px); }
+  .prompt-ko{ font-size:min(9vmin, 38px); font-weight:400; line-height:1.3; letter-spacing:-0.02em; }
+  .answer{ display:flex; flex-direction:column; gap:4px; align-items:center; }
+  .answer .hun{ font-size:min(5.5vmin, 22px); color:var(--ink-2); }
+  .answer .eum{ font-size:min(8vmin, 32px); font-weight:500; color:var(--brand); }
+  .tap{ font-family:var(--mono); font-size:11px; letter-spacing:0.12em; text-transform:uppercase; color:var(--muted); }
+  .reveal{ animation:rise .15s ease-out; }
+  @keyframes rise{ from{ opacity:0; transform:translateY(4px); } to{ opacity:1; transform:none; } }
+  @media (prefers-reduced-motion: reduce){ .reveal{ animation:none; } }
+
+  /* panels (setup / result) */
+  .panel{
+    flex:1; min-height:0; overflow-y:auto; -webkit-overflow-scrolling:touch;
+    background:var(--sheet); border:1px solid var(--line); border-radius:12px; padding:20px 18px;
+  }
+  .panel h2{ font-size:17px; font-weight:600; margin-bottom:5px; }
+  .panel p{ font-size:13.5px; color:var(--muted-2); }
+  .eyebrow{
+    font-family:var(--mono); font-size:10.5px; letter-spacing:0.14em;
+    text-transform:uppercase; color:var(--muted);
+  }
+  .choices{ display:flex; flex-direction:column; gap:10px; margin-top:18px; }
+  .choice{
+    text-align:left; padding:16px; border:1px solid var(--line); border-radius:10px;
+    display:flex; flex-direction:column; gap:4px; background:transparent;
+  }
+  .choice:active{ background:var(--brand-tint); border-color:var(--brand); }
+  .choice .t{ font-size:15px; font-weight:500; }
+  .choice .d{ font-size:12.5px; color:var(--muted-2); line-height:1.4; }
+  .opt{
+    display:flex; align-items:center; justify-content:space-between; gap:10px;
+    margin-top:18px; padding-top:16px; border-top:1px solid var(--line-soft);
+    font-size:13px; color:var(--muted-2);
+  }
+  .toggle{ display:flex; border:1px solid var(--line); border-radius:8px; overflow:hidden; }
+  .toggle button{ padding:8px 11px; font-size:12.5px; color:var(--muted-2); border-right:1px solid var(--line); }
+  .toggle button:last-child{ border-right:0; }
+  .toggle button[aria-selected="true"]{ background:var(--brand-tint); color:var(--brand); }
+
+  .score{ display:flex; align-items:baseline; gap:10px; margin:6px 0 10px; }
+  .score .big{ font-family:var(--mono); font-size:46px; font-weight:500; letter-spacing:-0.02em; }
+  .score .of{ font-family:var(--mono); font-size:13px; color:var(--muted); }
+  .wrongs{ display:flex; flex-wrap:wrap; gap:6px; margin-top:10px; }
+  .wrongs button{
+    font-family:var(--serif); font-size:26px; line-height:1; font-weight:400;
+    padding:10px 11px; border:1px solid var(--line); border-radius:8px; background:var(--canvas);
+    display:flex; flex-direction:column; align-items:center; gap:4px;
+  }
+  .wrongs button span{ font-family:var(--sans); font-size:10.5px; color:var(--muted-2); }
+
+  /* ---------- dock ---------- */
+  .dock{ padding-top:11px; display:flex; flex-direction:column; gap:8px; }
+  .ticks{ display:flex; gap:1.5px; height:9px; align-items:flex-end; margin-bottom:2px; }
+  .ticks i{ flex:1 1 0; height:5px; background:var(--line); border-radius:1px; }
+  .ticks i.done{ background:var(--brand-soft); }
+  .ticks i.mark{ background:var(--no); }
+  .ticks i.ok{ background:var(--ok); }
+  .ticks i.bad{ background:var(--no); }
+  .ticks i.now{ background:var(--brand); height:9px; }
+
+  .pad{ display:flex; gap:8px; }
+  .key{
+    min-height:58px; border:1px solid var(--line); border-radius:10px; background:var(--sheet);
+    display:flex; align-items:center; justify-content:center; gap:6px;
+    font-size:15px; color:var(--ink-2); flex:1;
+  }
+  .key:active{ background:var(--brand-tint); }
+  .key.nav{ flex:0 0 62px; font-size:19px; color:var(--muted-2); }
+  .key.primary{ background:var(--brand); border-color:var(--brand); color:var(--on-brand); font-weight:500; }
+  .key.primary:active{ opacity:.88; }
+  .key.ok{ color:var(--ok); }
+  .key.ok:active{ background:var(--ok-tint); border-color:var(--ok); }
+  .key.no{ color:var(--no); }
+  .key.no:active{ background:var(--no-tint); border-color:var(--no); }
+  .key[disabled]{ opacity:.35; }
+
+  .chips{ display:flex; gap:6px; }
+  .chip{
+    flex:1; min-height:36px; border:1px solid var(--line); border-radius:999px;
+    background:var(--sheet); font-size:12px; color:var(--muted-2);
+    display:flex; align-items:center; justify-content:center; gap:5px;
+  }
+  .chip:active{ background:var(--brand-tint); }
+  .chip[aria-pressed="true"]{ background:var(--brand); border-color:var(--brand); color:var(--on-brand); }
+  .chip .dot{ width:6px; height:6px; border-radius:50%; background:var(--no); }
+
+  .kbd{
+    display:none; font-family:var(--mono); font-size:10.5px; color:var(--muted);
+    gap:14px; flex-wrap:wrap; padding-top:2px;
+  }
+  @media (hover:hover) and (pointer:fine){ .kbd{ display:flex; } }
+  .kbd b{ border:1px solid var(--line); border-radius:3px; padding:1px 5px; font-weight:400; color:var(--muted-2); }
+  .toast{
+    position:fixed; left:50%; transform:translateX(-50%);
+    bottom:calc(env(safe-area-inset-bottom) + 20px);
+    background:var(--ink); color:var(--canvas);
+    font-size:12.5px; padding:10px 15px; border-radius:999px;
+    opacity:0; transition:opacity .3s ease; pointer-events:none; z-index:20;
+    max-width:84%; text-align:center;
+  }
+  .toast.on{ opacity:.94; }
+  @media (prefers-reduced-motion: reduce){ .toast{ transition:none; } }
+  .hide{ display:none !important; }
+</style>
+
+</head>
+<body>
+<div class="app">
+  <header class="hd">
+    <div class="hd-row">
+      <span class="title">漢字 三級</span>
+      <span class="counter" id="counter"></span>
+    </div>
+    <div class="hd-row">
+      <label class="sel">
+        <span class="hide">학습 구간</span>
+        <select id="secSel"></select>
+      </label>
+      <button class="dirbtn" id="dirBtn" aria-label="문제 방향 바꾸기">
+        <span class="sw" id="dirLabel">한자 → 뜻·음</span>
+      </button>
+      <div class="seg" role="tablist" aria-label="모드">
+        <button id="mStudy" role="tab" aria-selected="true">학습</button>
+        <button id="mTest" role="tab" aria-selected="false">테스트</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="stage" id="stage">
+    <div class="view on" id="vStudy">
+      <div class="card" id="sCard"><div id="sBody"></div></div>
+    </div>
+
+    <div class="view" id="vQuiz">
+      <div class="card" id="qCard"><div id="qBody"></div></div>
+    </div>
+
+    <div class="view" id="vSetup">
+      <div class="panel">
+        <div class="eyebrow">테스트</div>
+        <h2>어떻게 풀까요</h2>
+        <p>카드를 보고 머릿속으로 답한 뒤, 정답을 열어 직접 채점합니다.</p>
+        <div class="choices">
+          <button class="choice" id="tSeq">
+            <span class="t">순서대로 테스트</span>
+            <span class="d">배정 순서 그대로 — 외운 흐름을 따라 점검합니다.</span>
+          </button>
+          <button class="choice" id="tRand">
+            <span class="t">랜덤으로 테스트</span>
+            <span class="d">순서를 섞어 출제 — 앞뒤 맥락 없이 글자만 보고 떠올립니다.</span>
+          </button>
+        </div>
+        <div class="opt">
+          <span>출제 범위</span>
+          <div class="toggle" id="scopeToggle">
+            <button data-scope="all" aria-selected="true">구간 전체</button>
+            <button data-scope="marked" aria-selected="false">모름만</button>
+          </div>
+        </div>
+        <div class="opt" id="bestRow">
+          <span>이 구간 최고 기록</span>
+          <span class="mono" id="tBest">기록 없음</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="view" id="vResult">
+      <div class="panel">
+        <div class="eyebrow" id="rMeta">결과</div>
+        <div class="score"><span class="big" id="rScore">0</span><span class="of" id="rOf"></span></div>
+        <p id="rNote"></p>
+        <div id="rWrongWrap">
+          <div class="eyebrow" style="margin-top:20px">틀린 글자 <span id="rWrongN"></span></div>
+          <div class="wrongs" id="rWrongs"></div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="dock" id="dock">
+    <div class="ticks" id="ticks"></div>
+
+    <div id="dStudy">
+      <div class="pad">
+        <button class="key nav" id="sPrev" aria-label="이전">←</button>
+        <button class="key primary" id="sFlip">뜻·음 보기</button>
+        <button class="key nav" id="sNext" aria-label="다음">→</button>
+      </div>
+      <div class="chips" style="margin-top:8px">
+        <button class="chip" id="sMark" aria-pressed="false">모름</button>
+        <button class="chip" id="sMarkedOnly">모름만</button>
+        <button class="chip" id="sShuffle">섞기</button>
+        <button class="chip" id="sReset">처음부터</button>
+      </div>
+    </div>
+
+    <div id="dQuiz" class="hide">
+      <div class="pad" id="qRowReveal">
+        <button class="key primary" id="qReveal">정답 보기</button>
+      </div>
+      <div class="pad hide" id="qRowGrade">
+        <button class="key no" id="qNoBtn">✕ 틀렸다</button>
+        <button class="key ok" id="qOkBtn">○ 맞혔다</button>
+      </div>
+      <div class="chips" style="margin-top:8px">
+        <button class="chip" id="qBack">이전 문제</button>
+        <button class="chip" id="qQuit">그만두기</button>
+      </div>
+    </div>
+
+    <div id="dResult" class="hide">
+      <div class="pad">
+        <button class="key primary" id="rRetryWrong">틀린 것만 다시</button>
+      </div>
+      <div class="chips" style="margin-top:8px">
+        <button class="chip" id="rAgain">같은 방식 다시</button>
+        <button class="chip" id="rBack">방식 고르기</button>
+        <button class="chip" id="rNextSec">다음 구간 →</button>
+      </div>
+    </div>
+
+    <div class="kbd" id="kbd"></div>
+  </footer>
+</div>
+
+<script>
+var RAW_DATA = `
+佳|아름다울|가
+架|시렁|가
+暇|틈,겨를|가
+假|거짓|가
+街|거리|가
+加|더할|가
+可|옳을|가
+價|값|가
+家|집|가
+歌|노래|가
+却|물리칠|각
+脚|다리|각
+閣|집|각
+刻|새길|각
+覺|깨달을|각
+各|각각|각
+角|뿔|각
+姦|간음할|간
+刊|새길|간
+幹|줄기|간
+懇|간절할|간
+肝|간|간
+干|방패|간
+看|볼|간
+簡|대쪽,간략할|간
+間|사이|간
+渴|목마를|갈
+鑑|거울|감
+敢|감히,구태여|감
+甘|달|감
+減|덜|감
+監|볼|감
+感|느낄|감
+甲|갑옷|갑
+剛|굳셀|강
+綱|벼리|강
+鋼|강철|강
+降|내릴|강/항복할 항
+康|편안|강
+講|욀|강
+強|강할|강
+江|강|강
+慨|슬퍼할|개
+皆|다|개
+介|낄|개
+概|대개|개
+蓋|덮을|개
+個|낱|개
+改|고칠|개
+開|열|개
+客|손|객
+距|상거할|거
+居|살|거
+巨|클|거
+拒|막을|거
+據|근거|거
+去|갈|거
+擧|들|거
+車|수레|거/차
+乾|하늘,마를|건
+件|물건|건
+健|굳셀|건
+建|세울|건
+乞|빌|걸
+傑|뛰어날|걸
+劍|칼|검
+儉|검소할|검
+檢|검사할|검
+隔|사이 뜰|격
+擊|칠|격
+激|격할|격
+格|격식|격
+牽|이끌,끌|견
+絹|비단|견
+肩|어깨|견
+遣|보낼|견
+堅|굳을|견
+犬|개|견
+見|볼|견/뵈올 현
+訣|이별할|결
+潔|깨끗할|결
+缺|이지러질|결
+決|결단할|결
+結|맺을|결
+兼|겸할|겸
+謙|겸손할|겸
+卿|벼슬|경
+庚|별|경
+竟|마침내|경
+徑|지름길,길|경
+硬|굳을|경
+耕|밭 갈|경
+頃|이랑,잠깐|경
+傾|기울|경
+更|고칠|경/다시 갱
+鏡|거울|경
+驚|놀랄|경
+境|지경|경
+慶|경사|경
+經|지날,글|경
+警|깨우칠|경
+景|볕|경
+競|다툴|경
+輕|가벼울|경
+敬|공경|경
+京|서울|경
+癸|북방,천간|계
+繫|맬|계
+啓|열|계
+契|맺을|계
+桂|계수나무|계
+械|기계|계
+溪|시내|계
+季|계절|계
+戒|경계할|계
+系|이어 맬|계
+繼|이을|계
+階|섬돌|계
+鷄|닭|계
+係|맬|계
+界|지경|계
+計|셀|계
+枯|마를|고
+顧|돌아볼|고
+姑|시어미|고
+稿|원고,볏짚|고
+鼓|북|고
+孤|외로울|고
+庫|곳집|고
+故|연고|고
+固|굳을|고
+考|생각할|고
+告|고할|고
+古|예|고
+苦|쓸|고
+高|높을|고
+哭|울|곡
+谷|골|곡
+穀|곡식|곡
+曲|굽을|곡
+坤|따,땅|곤
+困|곤할|곤
+骨|뼈|골
+供|이바지할|공
+恐|두려울|공
+恭|공손할|공
+貢|바칠|공
+孔|구멍|공
+攻|칠|공
+公|공평할|공
+共|한가지|공
+功|공|공
+工|장인|공
+空|빌|공
+寡|적을|과
+誇|자랑할|과
+課|공부할,과정|과
+過|지날|과
+果|실과|과
+科|과목|과
+郭|둘레,외성|곽
+冠|갓|관
+寬|너그러울|관
+慣|익숙할|관
+貫|꿸|관
+館|집|관
+管|대롱,주관할|관
+官|벼슬|관
+觀|볼|관
+關|관계할|관
+狂|미칠|광
+鑛|쇳돌|광
+廣|넓을|광
+光|빛|광
+掛|걸|괘
+塊|흙덩이|괴
+愧|부끄러울|괴
+壞|무너질|괴
+怪|괴이할|괴
+矯|바로잡을|교
+郊|들|교
+巧|공교할|교
+較|견줄,비교할|교
+橋|다리|교
+交|사귈|교
+敎|가르칠|교
+校|학교|교
+俱|함께|구
+懼|두려워할|구
+狗|개|구
+苟|진실로,구차할|구
+驅|몰|구
+龜|거북|구/귀, 터질 균
+丘|언덕|구
+久|오랠|구
+拘|잡을|구
+構|얽을|구
+句|글귀|구
+求|구할|구
+究|연구할|구
+救|구원할|구
+具|갖출|구
+舊|예,옛|구
+區|구분할,지경|구
+球|공|구
+口|입|구
+九|아홉|구
+菊|국화|국
+局|판|국
+國|나라|국
+君|임금|군
+群|무리|군
+郡|고을|군
+軍|군사|군
+屈|굽힐|굴
+弓|활|궁
+窮|다할,궁할|궁
+宮|집|궁
+拳|주먹|권
+券|문서|권
+勸|권할|권
+卷|책|권
+權|권세|권
+厥|그|궐
+軌|바퀴자국|궤
+鬼|귀신|귀
+歸|돌아갈|귀
+貴|귀할|귀
+叫|부르짖을|규
+糾|얽힐|규
+規|법|규
+菌|버섯|균
+均|고를|균
+克|이길|극
+劇|심할|극
+極|극진할,다할|극
+僅|겨우|근
+斤|근,날|근
+謹|삼갈|근
+勤|부지런할|근
+筋|힘줄|근
+根|뿌리|근
+近|가까울|근
+琴|거문고|금
+禽|새|금
+錦|비단|금
+禁|금할|금
+今|이제|금
+金|쇠|금/성 김
+及|미칠|급
+給|줄|급
+急|급할|급
+級|등급|급
+肯|즐길|긍
+幾|몇|기
+忌|꺼릴|기
+旣|이미|기
+棄|버릴|기
+欺|속일|기
+豈|어찌|기
+飢|주릴|기
+企|꾀할|기
+其|그|기
+畿|경기|기
+祈|빌|기
+騎|말 탈|기
+奇|기특할|기
+寄|부칠|기
+機|틀|기
+紀|벼리|기
+器|그릇|기
+起|일어날|기
+技|재주|기
+期|기약할|기
+汽|물 끓는 김|기
+基|터|기
+己|몸|기
+旗|기|기
+氣|기운|기
+記|기록할|기
+緊|긴할|긴
+吉|길할|길
+那|어찌|나
+諾|허락할|낙
+暖|따뜻할|난
+難|어려울|난
+男|사내|남
+南|남녘|남
+納|들일|납
+娘|계집|낭
+乃|이에|내
+奈|어찌|내
+耐|견딜|내
+內|안|내
+女|계집|녀
+年|해|년
+念|생각|념
+寧|편안|녕
+奴|종|노
+努|힘쓸|노
+怒|성낼|노
+農|농사|농
+惱|번뇌할|뇌
+腦|골,뇌수|뇌
+能|능할|능
+泥|진흙|니
+茶|차|다/차
+多|많을|다
+丹|붉을|단
+但|다만|단
+旦|아침|단
+段|층계|단
+單|홑|단
+斷|끊을|단
+檀|박달나무|단
+端|끝|단
+壇|단|단
+團|둥글|단
+短|짧을|단
+達|통달할|달
+淡|맑을|담
+擔|멜|담
+談|말씀|담
+畓|논|답
+踏|밟을|답
+答|대답|답
+唐|당나라,당황할|당
+糖|엿|당
+黨|무리|당
+當|마땅|당
+堂|집|당
+臺|대|대
+貸|빌릴,뀔|대
+帶|띠|대
+隊|무리|대
+代|대신할|대
+對|대할|대
+待|기다릴|대
+大|큰|대
+德|큰,덕|덕
+塗|칠할|도
+挑|돋울|도
+稻|벼|도
+跳|뛸|도
+倒|넘어질|도
+刀|칼|도
+桃|복숭아|도
+渡|건널|도
+途|길|도
+陶|질그릇|도
+徒|무리|도
+盜|도둑|도
+逃|도망할|도
+導|인도할|도
+島|섬|도
+都|도읍|도
+到|이를|도
+圖|그림|도
+度|법도|도/헤아릴 탁
+道|길|도
+篤|도타울|독
+毒|독|독
+督|감독할|독
+獨|홀로|독
+讀|읽을|독/구절 두
+敦|도타울|돈
+豚|돼지|돈
+突|갑자기|돌
+凍|얼|동
+銅|구리|동
+童|아이|동
+冬|겨울|동
+動|움직일|동
+同|한가지|동
+洞|골|동/밝을 통
+東|동녘|동
+斗|말|두
+豆|콩|두
+頭|머리|두
+屯|진 칠|둔
+鈍|둔할|둔
+得|얻을|득
+騰|오를|등
+燈|등|등
+等|무리|등
+登|오를|등
+羅|벌릴|라
+絡|이을,얽을|락
+落|떨어질|락
+樂|즐길|락/노래 악/좋아할 요
+欄|난간|란
+蘭|난초|란
+亂|어지러울|란
+卵|알|란
+濫|넘칠|람
+覽|볼|람
+廊|사랑채,행랑|랑
+浪|물결|랑
+郞|사내|랑
+朗|밝을|랑
+來|올|래
+冷|찰|랭
+掠|노략질할|략
+略|간략할,약할|략
+諒|살펴 알,믿을|량
+梁|들보,돌다리|량
+涼|서늘할|량
+糧|양식|량
+兩|두|량
+量|헤아릴|량
+良|어질|량
+勵|힘쓸|려
+慮|생각할|려
+麗|고울|려
+旅|나그네|려
+曆|책력|력
+歷|지날|력
+力|힘|력
+憐|불쌍히 여길|련
+戀|그리워할|련
+聯|연이을|련
+蓮|연꽃|련
+鍊|쇠 불릴,단련할|련
+連|이을|련
+練|익힐|련
+劣|못할|렬
+裂|찢어질|렬
+烈|매울|렬
+列|벌릴|렬
+廉|청렴할|렴
+獵|사냥|렵
+零|떨어질,영|령
+嶺|고개|령
+靈|신령|령
+令|하여금|령
+領|거느릴|령
+隸|종|례
+例|법식|례
+禮|예도|례
+爐|화로|로
+露|이슬|로
+勞|일할|로
+路|길|로
+老|늙을|로
+鹿|사슴|록
+祿|녹|록
+錄|기록할|록
+綠|푸를|록
+論|논할|론
+弄|희롱할|롱
+賴|의뢰할|뢰
+雷|우레|뢰
+了|마칠|료
+僚|동료|료
+料|헤아릴|료
+龍|용|룡
+屢|여러|루
+淚|눈물|루
+樓|다락|루
+漏|샐|루
+累|여러,자주|루
+柳|버들|류
+留|머무를|류
+流|흐를|류
+類|무리|류
+陸|뭍|륙
+六|여섯|륙
+倫|인륜|륜
+輪|바퀴|륜
+栗|밤|률
+率|비율|률/거느릴 솔
+律|법칙|률
+隆|높을|륭
+陵|언덕|릉
+梨|배|리
+吏|벼슬아치|리
+履|밟을|리
+裏|속|리
+離|떠날|리
+利|이할|리
+李|오얏,성|리
+理|다스릴|리
+里|마을|리
+隣|이웃|린
+臨|임할|림
+林|수풀|림
+立|설|립
+磨|갈|마
+麻|삼|마
+馬|말|마
+幕|장막|막
+漠|넓을|막
+莫|없을|막
+慢|거만할|만
+漫|흩어질|만
+晚|늦을|만
+滿|찰|만
+萬|일만|만
+末|끝|말
+忘|잊을|망
+忙|바쁠|망
+罔|없을,그물|망
+茫|아득할|망
+妄|망령될|망
+亡|망할|망
+望|바랄|망
+埋|묻을|매
+媒|중매|매
+梅|매화|매
+妹|누이|매
+買|살|매
+賣|팔|매
+每|매양|매
+麥|보리|맥
+脈|줄기|맥
+孟|맏|맹
+猛|사나울|맹
+盲|소경,눈멀|맹
+盟|맹세|맹
+免|면할|면
+眠|잘|면
+綿|솜|면
+勉|힘쓸|면
+面|낯|면
+滅|꺼질,멸할|멸
+冥|어두울|명
+銘|새길|명
+鳴|울|명
+明|밝을|명
+名|이름|명
+命|목숨|명
+侮|업신여길|모
+冒|무릅쓸|모
+募|모을,뽑을|모
+暮|저물|모
+某|아무|모
+慕|그릴|모
+謀|꾀|모
+貌|모양|모
+模|본뜰|모
+毛|터럭|모
+母|어미|모
+睦|화목할|목
+牧|칠|목
+目|눈|목
+木|나무|목
+沒|빠질|몰
+夢|꿈|몽
+蒙|어두울|몽
+卯|토끼|묘
+廟|사당|묘
+苗|모|묘
+墓|무덤|묘
+妙|묘할|묘
+戊|천간|무
+霧|안개|무
+茂|무성할|무
+貿|무역할|무
+舞|춤출|무
+務|힘쓸|무
+武|호반|무
+無|없을|무
+墨|먹|묵
+默|잠잠할|묵
+紋|무늬|문
+聞|들을|문
+問|물을|문
+文|글월|문
+門|문|문
+勿|말|물
+物|물건|물
+眉|눈썹|미
+迷|미혹할|미
+尾|꼬리|미
+微|작을|미
+味|맛|미
+未|아닐|미
+米|쌀|미
+美|아름다울|미
+憫|민망할|민
+敏|민첩할|민
+民|백성|민
+蜜|꿀|밀
+密|빽빽할|밀
+泊|머무를,배 댈|박
+薄|엷을|박
+迫|핍박할|박
+拍|칠|박
+博|넓을|박
+朴|성,순박할|박
+伴|짝|반
+叛|배반할|반
+返|돌이킬|반
+盤|소반|반
+般|가지,일반|반
+飯|밥|반
+半|반|반
+反|돌이킬|반
+班|나눌|반
+拔|뽑을|발
+髮|터럭|발
+發|필|발
+倣|본뜰|방
+傍|곁|방
+邦|나라|방
+芳|꽃다울|방
+妨|방해할|방
+房|방|방
+訪|찾을|방
+防|막을|방
+放|놓을|방
+方|모|방
+杯|잔|배
+培|북돋울|배
+排|밀칠|배
+輩|무리|배
+拜|절|배
+背|등|배
+配|나눌,짝|배
+倍|곱|배
+伯|맏|백
+百|일백|백
+白|흰|백
+煩|번거로울|번
+飜|번역할|번
+繁|번성할|번
+番|차례|번
+伐|칠|벌
+罰|벌할|벌
+凡|무릇|범
+犯|범할|범
+範|법|범
+法|법|법
+碧|푸를|벽
+壁|벽|벽
+辨|분별할|변
+辯|말씀|변
+邊|가|변
+變|변할|변
+別|다를,나눌|별
+屛|병풍|병
+竝|나란히|병
+丙|남녘,천간|병
+兵|병사|병
+病|병|병
+補|기울|보
+譜|족보|보
+普|넓을|보
+保|지킬|보
+報|갚을,알릴|보
+寶|보배|보
+步|걸음|보
+卜|점|복
+腹|배|복
+覆|덮을|복/다시 부
+伏|엎드릴|복
+複|겹칠|복
+復|회복할|복/다시 부
+福|복|복
+服|옷|복
+本|근본|본
+蜂|벌|봉
+封|봉할|봉
+峯|봉우리|봉
+逢|만날|봉
+鳳|봉새|봉
+奉|받들|봉
+赴|다다를|부
+付|부칠|부
+扶|도울|부
+浮|뜰|부
+符|부호|부
+簿|문서|부
+腐|썩을|부
+賦|부세|부
+附|붙을|부
+否|아닐|부
+負|질|부
+副|버금|부
+婦|며느리,아내|부
+富|부자|부
+府|마을,관청|부
+部|떼|부
+夫|지아비|부
+父|아비|부
+北|북녘|북/달아날 배
+墳|무덤|분
+奔|달릴|분
+奮|떨칠|분
+紛|어지러울|분
+憤|분할|분
+粉|가루|분
+分|나눌|분
+拂|떨칠|불
+佛|부처|불
+不|아닐|불/부
+崩|무너질|붕
+朋|벗|붕
+卑|낮을|비
+妃|왕비|비
+婢|계집종|비
+肥|살찔|비
+批|비평할|비
+碑|비석|비
+祕|숨길|비
+備|갖출|비
+悲|슬플|비
+非|아닐|비
+飛|날|비
+比|견줄|비
+費|쓸|비
+鼻|코|비
+賓|손|빈
+頻|자주|빈
+貧|가난할|빈
+聘|부를|빙
+氷|얼음|빙
+似|닮을|사
+巳|뱀|사
+捨|버릴|사
+斯|이|사
+詐|속일|사
+賜|줄|사
+司|맡을|사
+斜|비낄|사
+沙|모래|사
+祀|제사|사
+蛇|뱀|사
+詞|말,글|사
+邪|간사할|사
+射|쏠|사
+私|사사|사
+絲|실|사
+辭|말씀|사
+寺|절|사
+師|스승|사
+舍|집|사
+謝|사례할|사
+寫|베낄|사
+思|생각|사
+査|조사할|사
+仕|섬길|사
+史|사기|사
+士|선비|사
+使|하여금,부릴|사
+死|죽을|사
+社|모일|사
+事|일|사
+四|넉|사
+朔|초하루|삭
+削|깎을|삭
+散|흩을|산
+産|낳을|산
+算|셈|산
+山|메|산
+殺|죽일|살/감할 쇄
+森|수풀|삼
+三|석|삼
+嘗|맛볼|상
+祥|상서|상
+像|모양|상
+償|갚을|상
+喪|잃을|상
+尙|오히려|상
+桑|뽕나무|상
+裳|치마|상
+詳|자세할|상
+霜|서리|상
+傷|다칠|상
+象|코끼리|상
+常|떳떳할|상
+床|평상|상
+想|생각|상
+狀|형상|상/문서 장
+賞|상줄|상
+商|장사|상
+相|서로|상
+上|윗|상
+塞|막힐|색/변방 새
+索|찾을|색/노 삭
+色|빛|색
+生|날|생
+庶|여러|서
+敍|펼|서
+暑|더울|서
+誓|맹세할|서
+逝|갈|서
+徐|천천할|서
+恕|용서할|서
+緖|실마리|서
+署|마을,관청|서
+序|차례|서
+書|글|서
+西|서녘|서
+昔|예|석
+析|쪼갤|석
+惜|아낄|석
+釋|풀|석
+席|자리|석
+石|돌|석
+夕|저녁|석
+旋|돌|선
+禪|선|선
+宣|베풀|선
+善|착할|선
+船|배|선
+選|가릴|선
+仙|신선|선
+鮮|고울|선
+線|줄|선
+先|먼저|선
+舌|혀|설
+設|베풀|설
+說|말씀|설/달랠 세
+雪|눈|설
+攝|다스릴,잡을|섭
+涉|건널|섭
+城|재|성
+星|별|성
+盛|성할|성
+聖|성인|성
+聲|소리|성
+誠|정성|성
+性|성품|성
+成|이룰|성
+省|살필|성/덜 생
+姓|성|성
+勢|형세|세
+稅|세금|세
+細|가늘|세
+歲|해|세
+洗|씻을|세
+世|인간,대|세
+召|부를|소
+昭|밝을|소
+蔬|나물|소
+騷|떠들|소
+燒|사를|소
+疏|소통할|소
+蘇|되살아날|소
+訴|호소할|소
+掃|쓸|소
+笑|웃음|소
+素|본디,흴|소
+消|사라질|소
+少|적을|소
+所|바|소
+小|작을|소
+粟|조|속
+屬|붙일|속
+俗|풍속|속
+續|이을|속
+束|묶을|속
+速|빠를|속
+損|덜|손
+孫|손자|손
+誦|욀|송
+訟|송사할|송
+松|소나무|송
+頌|기릴|송
+送|보낼|송
+刷|인쇄할|쇄
+鎖|쇠사슬|쇄
+衰|쇠할|쇠
+囚|가둘|수
+搜|찾을|수
+睡|졸음|수
+誰|누구|수
+遂|드디어|수
+雖|비록|수
+須|모름지기|수
+垂|드리울|수
+壽|목숨|수
+帥|장수|수
+愁|근심|수
+殊|다를|수
+獸|짐승|수
+輸|보낼|수
+隨|따를|수
+需|쓰일,쓸|수
+秀|빼어날|수
+修|닦을|수
+受|받을|수
+守|지킬|수
+授|줄|수
+收|거둘|수
+首|머리|수
+樹|나무|수
+手|손|수
+數|셈|수
+水|물|수
+孰|누구|숙
+淑|맑을|숙
+熟|익을|숙
+叔|아재비|숙
+肅|엄숙할|숙
+宿|잘|숙/별자리 수
+循|돌|순
+殉|따라 죽을|순
+脣|입술|순
+巡|돌,순행할|순
+旬|열흘|순
+瞬|깜짝일|순
+純|순수할|순
+順|순할|순
+戌|개|술
+述|펼|술
+術|재주|술
+崇|높을|숭
+濕|젖을|습
+拾|주울|습/열 십
+襲|엄습할|습
+習|익힐|습
+乘|탈|승
+僧|중|승
+昇|오를|승
+承|이을|승
+勝|이길|승
+矢|화살|시
+侍|모실|시
+施|베풀|시
+是|이,옳을|시
+視|볼|시
+試|시험|시
+詩|시|시
+示|보일|시
+始|비로소|시
+市|저자|시
+時|때|시
+飾|꾸밀|식
+息|쉴|식
+識|알|식/기록할 지
+式|법|식
+植|심을|식
+食|밥,먹을|식
+伸|펼|신
+晨|새벽|신
+辛|매울|신
+愼|삼갈|신
+申|납,펼|신
+臣|신하|신
+信|믿을|신
+新|새|신
+神|귀신|신
+身|몸|신
+實|열매|실
+失|잃을|실
+室|집|실
+尋|찾을|심
+審|살필|심
+甚|심할|심
+深|깊을|심
+心|마음|심
+十|열|십
+雙|두,쌍|쌍
+氏|각시,성씨|씨
+餓|주릴|아
+亞|버금|아
+我|나|아
+牙|어금니|아
+芽|싹|아
+阿|언덕|아
+雅|맑을|아
+兒|아이|아
+岳|큰산|악
+惡|악할|악/미워할 오
+雁|기러기|안
+岸|언덕|안
+顔|낯|안
+眼|눈|안
+案|책상|안
+安|편안|안
+謁|뵐|알
+巖|바위|암
+暗|어두울|암
+押|누를|압
+壓|누를|압
+殃|재앙|앙
+仰|우러를|앙
+央|가운데|앙
+涯|물가|애
+哀|슬플|애
+愛|사랑|애
+厄|액|액
+額|이마|액
+液|진|액
+也|어조사|야
+耶|어조사|야
+夜|밤|야
+野|들|야
+躍|뛸|약
+若|같을|약/반야 야
+約|맺을|약
+弱|약할|약
+藥|약|약
+楊|버들|양
+壤|흙덩이|양
+揚|날릴|양
+讓|사양할|양
+樣|모양|양
+羊|양|양
+養|기를|양
+洋|큰바다|양
+陽|볕|양
+於|어조사|어
+御|거느릴|어
+漁|고기 잡을|어
+魚|물고기|어
+語|말씀|어
+憶|생각할|억
+抑|누를|억
+億|억|억
+焉|어찌|언
+言|말씀|언
+嚴|엄할|엄
+業|업|업
+予|나|여
+余|나|여
+汝|너|여
+輿|수레|여
+與|더불,줄|여
+如|같을|여
+餘|남을|여
+亦|또|역
+役|부릴|역
+疫|전염병|역
+譯|번역할|역
+驛|역|역
+域|지경|역
+易|바꿀|역/쉬울 이
+逆|거스릴|역
+宴|잔치|연
+沿|물 따라갈|연
+燕|제비|연
+軟|연할|연
+延|늘일|연
+燃|탈|연
+緣|인연|연
+鉛|납|연
+演|펼|연
+煙|연기|연
+硏|갈|연
+然|그럴|연
+閱|볼|열
+悅|기쁠|열
+熱|더울|열
+染|물들|염
+炎|불꽃|염
+鹽|소금|염
+葉|잎|엽
+泳|헤엄칠|영
+詠|읊을|영
+影|그림자|영
+映|비칠|영
+營|경영할|영
+迎|맞을|영
+榮|영화|영
+永|길|영
+英|꽃부리|영
+銳|날카로울|예
+譽|기릴|예
+豫|미리|예
+藝|재주|예
+傲|거만할|오
+吾|나|오
+嗚|슬플|오
+娛|즐길|오
+汚|더러울|오
+悟|깨달을|오
+烏|까마귀|오
+誤|그르칠|오
+午|낮|오
+五|다섯|오
+獄|옥|옥
+玉|구슬|옥
+屋|집|옥
+溫|따뜻할|온
+擁|낄,안을|옹
+翁|늙은이|옹
+臥|누울|와
+瓦|기와|와
+緩|느릴|완
+完|완전할|완
+曰|가로|왈
+往|갈|왕
+王|임금|왕
+畏|두려워할|외
+外|바깥|외
+搖|흔들|요
+腰|허리|요
+遙|멀|요
+謠|노래|요
+曜|빛날|요
+要|요긴할|요
+慾|욕심|욕
+欲|하고자 할|욕
+辱|욕될|욕
+浴|목욕할|욕
+庸|떳떳할|용
+容|얼굴|용
+勇|날랠|용
+用|쓸|용
+于|어조사|우
+又|또|우
+尤|더욱|우
+偶|짝|우
+宇|집|우
+愚|어리석을|우
+憂|근심|우
+羽|깃|우
+優|넉넉할|우
+遇|만날|우
+郵|우편|우
+牛|소|우
+友|벗|우
+雨|비|우
+右|오른|우
+云|이를|운
+韻|운|운
+雲|구름|운
+運|옮길|운
+雄|수컷|웅
+怨|원망할|원
+援|도울|원
+源|근원|원
+員|인원|원
+圓|둥글|원
+原|언덕|원
+院|집|원
+願|원할|원
+元|으뜸|원
+園|동산|원
+遠|멀|원
+越|넘을|월
+月|달|월
+緯|씨|위
+違|어긋날|위
+僞|거짓|위
+胃|밥통|위
+謂|이를|위
+危|위태할|위
+圍|에워쌀|위
+委|맡길|위
+威|위엄|위
+慰|위로할|위
+爲|하,할|위
+衛|지킬|위
+位|자리|위
+偉|클|위
+唯|오직|유
+惟|생각할|유
+愈|나을|유
+酉|닭|유
+幼|어릴|유
+幽|그윽할|유
+悠|멀|유
+柔|부드러울|유
+猶|오히려|유
+維|벼리|유
+裕|넉넉할|유
+誘|꾈|유
+乳|젖|유
+儒|선비|유
+遊|놀|유
+遺|남길|유
+油|기름|유
+由|말미암을|유
+有|있을|유
+肉|고기|육
+育|기를|육
+閏|윤달|윤
+潤|불을,윤택할|윤
+隱|숨을|은
+恩|은혜|은
+銀|은|은
+乙|새|을
+吟|읊을|음
+淫|음란할|음
+陰|그늘|음
+音|소리|음
+飮|마실|음
+泣|울|읍
+邑|고을|읍
+凝|엉길|응
+應|응할|응
+宜|마땅|의
+矣|어조사|의
+依|의지할|의
+儀|거동|의
+疑|의심할|의
+義|옳을|의
+議|의논할|의
+意|뜻|의
+衣|옷|의
+醫|의원|의
+夷|오랑캐|이
+而|말 이을|이
+已|이미|이
+異|다를|이
+移|옮길|이
+耳|귀|이
+以|써|이
+二|두|이
+翼|날개|익
+益|더할|익
+姻|혼인|인
+寅|범|인
+忍|참을|인
+仁|어질|인
+印|도장|인
+引|끌|인
+認|알|인
+因|인할|인
+人|사람|인
+逸|편안할|일
+一|한|일
+日|날|일
+壬|북방,천간|임
+賃|품삯|임
+任|맡길|임
+入|들|입
+恣|방자할|자
+玆|이|자
+刺|찌를|자/찌를 척
+慈|사랑|자
+紫|자줏빛|자
+姉|손윗누이|자
+姿|모양|자
+資|재물|자
+者|놈|자
+子|아들|자
+字|글자|자
+自|스스로|자
+爵|벼슬|작
+酌|술 부을|작
+作|지을|작
+昨|어제|작
+殘|남을|잔
+暫|잠깐|잠
+潛|잠길|잠
+雜|섞일|잡
+墻|담|장
+丈|어른|장
+掌|손바닥|장
+粧|단장할|장
+臟|오장|장
+莊|씩씩할|장
+葬|장사지낼|장
+藏|감출|장
+壯|장할|장
+帳|장막|장
+張|베풀|장
+腸|창자|장
+裝|꾸밀|장
+獎|장려할|장
+將|장수|장
+障|막을|장
+章|글|장
+場|마당|장
+長|긴|장
+哉|어조사|재
+宰|재상|재
+栽|심을|재
+裁|옷 마를|재
+載|실을|재
+再|두|재
+災|재앙|재
+材|재목|재
+財|재물|재
+在|있을|재
+才|재주|재
+爭|다툴|쟁
+抵|막을|저
+著|나타날|저
+底|밑|저
+低|낮을|저
+貯|쌓을|저
+滴|물방울|적
+寂|고요할|적
+摘|딸|적
+笛|피리|적
+跡|발자취|적
+蹟|자취|적
+積|쌓을|적
+籍|문서|적
+績|길쌈|적
+賊|도둑|적
+適|맞을|적
+敵|대적할|적
+赤|붉을|적
+的|과녁|적
+殿|전각|전
+專|오로지|전
+轉|구를|전
+錢|돈|전
+田|밭|전
+傳|전할|전
+典|법|전
+展|펼|전
+戰|싸움|전
+全|온전|전
+前|앞|전
+電|번개|전
+竊|훔칠|절
+折|꺾을|절
+絕|끊을|절
+切|끊을|절/온통 체
+節|마디|절
+漸|점점|점
+占|점칠,점령할|점
+點|점|점
+店|가게|점
+蝶|나비|접
+接|이을|접
+訂|바로잡을|정
+井|우물|정
+亭|정자|정
+廷|조정|정
+征|칠|정
+淨|깨끗할|정
+貞|곧을|정
+頂|정수리|정
+丁|고무래,장정|정
+整|가지런할|정
+靜|고요할|정
+政|정사|정
+程|한도,길|정
+精|정할|정
+停|머무를|정
+情|뜻|정
+定|정할|정
+庭|뜰|정
+正|바를|정
+堤|둑|제
+諸|모두|제
+齊|가지런할|제
+帝|임금|제
+制|절제할|제
+提|끌|제
+濟|건널|제
+祭|제사|제
+製|지을|제
+除|덜|제
+際|즈음,가|제
+第|차례|제
+題|제목|제
+弟|아우|제
+弔|조상할|조
+燥|마를|조
+兆|억조|조
+照|비칠|조
+租|조세|조
+條|가지|조
+潮|밀물,조수|조
+組|짤|조
+助|도울|조
+早|이를|조
+造|지을|조
+鳥|새|조
+操|잡을|조
+調|고를|조
+朝|아침|조
+祖|할아비|조
+族|겨레|족
+足|발|족
+存|있을|존
+尊|높을|존
+拙|졸할|졸
+卒|마칠|졸
+縱|세로|종
+從|좇을|종
+鍾|쇠북|종
+宗|마루|종
+終|마칠|종
+種|씨|종
+佐|도울|좌
+坐|앉을|좌
+座|자리|좌
+左|왼|좌
+罪|허물|죄
+舟|배|주
+奏|아뢸|주
+宙|집|주
+柱|기둥|주
+株|그루|주
+洲|물가|주
+珠|구슬|주
+鑄|쇠 불릴|주
+周|두루|주
+朱|붉을|주
+酒|술|주
+走|달릴|주
+州|고을|주
+週|주일|주
+晝|낮|주
+注|부을|주
+主|임금,주인|주
+住|살|주
+竹|대|죽
+俊|준걸|준
+遵|좇을|준
+準|준할|준
+仲|버금|중
+衆|무리|중
+重|무거울|중
+中|가운데|중
+卽|곧|즉
+贈|줄|증
+憎|미울|증
+曾|일찍|증
+症|증세|증
+蒸|찔|증
+證|증거|증
+增|더할|증
+只|다만|지
+遲|더딜,늦을|지
+之|갈|지
+枝|가지|지
+池|못|지
+持|가질|지
+智|지혜|지
+誌|기록할|지
+志|뜻|지
+指|가리킬|지
+支|지탱할|지
+至|이를|지
+止|그칠|지
+知|알|지
+地|땅|지
+紙|종이|지
+織|짤|직
+職|직분|직
+直|곧을|직
+振|떨칠|진
+辰|별|진/때 신
+鎭|진압할|진
+陳|베풀|진
+震|우레|진
+珍|보배|진
+盡|다할|진
+陣|진칠|진
+眞|참|진
+進|나아갈|진
+姪|조카|질
+疾|병|질
+秩|차례|질
+質|바탕|질
+執|잡을|집
+集|모을|집
+懲|징계할|징
+徵|부를|징
+且|또|차
+借|빌릴|차
+此|이|차
+差|다를|차
+次|버금|차
+捉|잡을|착
+錯|어긋날|착
+着|붙을|착
+贊|도울|찬
+讚|기릴|찬
+察|살필|찰
+慘|참혹할|참
+慙|부끄러울|참
+參|참여할|참/석 삼
+暢|화창할|창
+倉|곳집|창
+昌|창성할|창
+蒼|푸를|창
+創|비롯할|창
+唱|부를|창
+窓|창|창
+債|빚|채
+彩|채색|채
+菜|나물|채
+採|캘|채
+策|꾀|책
+冊|책|책
+責|꾸짖을|책
+妻|아내|처
+處|곳|처
+斥|물리칠|척
+尺|자|척
+戚|친척|척
+拓|넓힐|척/박을 탁
+薦|천거할|천
+淺|얕을|천
+賤|천할|천
+踐|밟을|천
+遷|옮길|천
+泉|샘|천
+千|일천|천
+天|하늘|천
+川|내|천
+哲|밝을|철
+徹|통할|철
+鐵|쇠|철
+尖|뾰족할|첨
+添|더할|첨
+妾|첩|첩
+晴|갤|청
+廳|관청|청
+聽|들을|청
+請|청할|청
+淸|맑을|청
+靑|푸를|청
+替|바꿀|체
+逮|잡을|체
+遞|갈릴|체
+滯|막힐|체
+體|몸|체
+抄|뽑을|초
+秒|분초|초
+礎|주춧돌|초
+肖|닮을|초
+超|뛰어넘을|초
+招|부를|초
+初|처음|초
+草|풀|초
+燭|촛불|촉
+促|재촉할|촉
+觸|닿을|촉
+村|마을|촌
+寸|마디|촌
+聰|귀밝을|총
+總|다,거느릴|총
+銃|총|총
+催|재촉할|최
+最|가장|최
+抽|뽑을|추
+醜|추할|추
+追|쫓을,따를|추
+推|밀|추
+秋|가을|추
+丑|소|축
+逐|쫓을|축
+畜|짐승|축
+縮|줄일|축
+築|쌓을|축
+蓄|모을|축
+祝|빌|축
+春|봄|춘
+出|날|출
+衝|찌를|충
+忠|충성|충
+蟲|벌레|충
+充|채울|충
+臭|냄새|취
+吹|불|취
+醉|취할|취
+就|나아갈|취
+趣|뜻|취
+取|가질|취
+側|곁|측
+測|헤아릴|측
+層|층|층
+値|값|치
+恥|부끄러울|치
+稚|어릴|치
+治|다스릴|치
+置|둘|치
+齒|이|치
+致|이를|치
+則|법칙|칙/곧 즉
+親|친할|친
+漆|옻|칠
+七|일곱|칠
+枕|베개|침
+沈|잠길|침/성 심
+浸|잠길|침
+寢|잘|침
+針|바늘|침
+侵|침노할|침
+稱|일컬을|칭
+快|쾌할|쾌
+墮|떨어질|타
+妥|온당할|타
+他|다를|타
+打|칠|타
+托|맡길|탁
+濁|흐릴|탁
+濯|씻을|탁
+卓|높을|탁
+誕|낳을,거짓|탄
+彈|탄알|탄
+歎|탄식할|탄
+炭|숯|탄
+奪|빼앗을|탈
+脫|벗을|탈
+貪|탐낼|탐
+探|찾을|탐
+塔|탑|탑
+湯|끓일|탕
+怠|게으를|태
+殆|거의|태
+泰|클|태
+態|모습|태
+太|클|태
+澤|못|택
+擇|가릴|택
+宅|집|택/댁
+兔|토끼|토
+吐|토할|토
+討|칠|토
+土|흙|토
+痛|아플|통
+統|거느릴|통
+通|통할|통
+退|물러날|퇴
+透|사무칠|투
+投|던질|투
+鬪|싸움|투
+特|특별할|특
+把|잡을|파
+播|뿌릴|파
+罷|마칠|파
+頗|자못|파
+派|갈래|파
+波|물결|파
+破|깨뜨릴|파
+販|팔|판
+版|판목|판
+判|판단할|판
+板|널|판
+八|여덟|팔
+貝|조개|패
+敗|패할|패
+遍|두루|편
+偏|치우칠|편
+片|조각|편
+編|엮을|편
+篇|책|편
+便|편할|편/똥오줌 변
+評|평할|평
+平|평평할|평
+幣|화폐|폐
+蔽|덮을|폐
+廢|폐할,버릴|폐
+弊|폐단,해질|폐
+肺|허파|폐
+閉|닫을|폐
+抱|안을|포
+飽|배부를|포
+捕|잡을|포
+浦|개,물가|포
+胞|세포,태보|포
+包|쌀|포
+布|베,펼|포/보시 보
+砲|대포|포
+幅|폭|폭
+爆|불터질|폭
+暴|사나울|폭/모질 포
+漂|떠다닐|표
+標|표할|표
+票|표|표
+表|겉|표
+品|물건|품
+楓|단풍|풍
+豊|풍년|풍
+風|바람|풍
+彼|저|피
+皮|가죽|피
+被|입을|피
+疲|피곤할|피
+避|피할|피
+匹|짝|필
+畢|마칠|필
+必|반드시|필
+筆|붓|필
+何|어찌|하
+荷|멜|하
+賀|하례할|하
+河|물|하
+下|아래|하
+夏|여름|하
+鶴|학|학
+學|배울|학
+旱|가물|한
+汗|땀|한
+恨|한|한
+閑|한가할|한
+限|한할|한
+寒|찰|한
+漢|한수,한나라|한
+韓|한국,나라|한
+割|벨|할
+咸|다|함
+含|머금을|함
+陷|빠질|함
+合|합할|합
+巷|거리|항
+恒|항상|항
+項|항목|항
+抗|겨룰|항
+港|항구|항
+航|배|항
+亥|돼지|해
+奚|어찌|해
+該|갖출,마땅|해
+解|풀|해
+害|해할|해
+海|바다|해
+核|씨|핵
+幸|다행|행
+行|다닐|행/항렬 항
+享|누릴|향
+響|울릴|향
+鄕|시골|향
+香|향기|향
+向|향할|향
+虛|빌|허
+許|허락할|허
+軒|집|헌
+獻|드릴|헌
+憲|법|헌
+險|험할|험
+驗|시험|험
+革|가죽|혁
+絃|줄|현
+縣|고을|현
+懸|달|현
+玄|검을|현
+顯|나타날|현
+賢|어질|현
+現|나타날|현
+穴|굴|혈
+血|피|혈
+嫌|싫어할|혐
+脅|위협할|협
+協|화할|협
+亨|형통할|형
+螢|반딧불|형
+衡|저울대|형
+刑|형벌|형
+形|모양|형
+兄|형|형
+兮|어조사|혜
+慧|슬기로울|혜
+惠|은혜|혜
+乎|어조사|호
+互|서로|호
+毫|터럭|호
+浩|넓을|호
+胡|되,오랑캐|호
+虎|범|호
+豪|호걸|호
+呼|부를|호
+好|좋을|호
+戶|집|호
+護|도울|호
+湖|호수|호
+號|이름,부르짖을|호
+惑|미혹할|혹
+或|혹|혹
+昏|어두울|혼
+魂|넋|혼
+婚|혼인할|혼
+混|섞을|혼
+忽|갑자기|홀
+弘|클|홍
+鴻|기러기|홍
+洪|넓을|홍
+紅|붉을|홍
+禾|벼|화
+禍|재앙|화
+華|빛날|화
+貨|재물|화
+化|될|화
+和|화할|화
+畫|그림|화/그을 획
+花|꽃|화
+話|말씀|화
+火|불|화
+擴|넓힐|확
+穫|거둘|확
+確|굳을|확
+丸|둥글|환
+換|바꿀|환
+還|돌아올|환
+歡|기쁠|환
+環|고리|환
+患|근심|환
+活|살|활
+皇|임금|황
+荒|거칠|황
+況|상황|황
+黃|누를|황
+悔|뉘우칠|회
+懷|품을|회
+灰|재|회
+回|돌아올|회
+會|모일|회
+劃|그을|획
+獲|얻을|획
+橫|가로|횡
+曉|새벽|효
+效|본받을|효
+孝|효도|효
+侯|제후|후
+候|기후|후
+厚|두터울|후
+後|뒤|후
+訓|가르칠|훈
+毁|헐|훼
+輝|빛날|휘
+揮|휘두를|휘
+携|이끌|휴
+休|쉴|휴
+胸|가슴|흉
+凶|흉할|흉
+黑|검을|흑
+吸|마실|흡
+興|일|흥
+稀|드물|희
+戲|놀이|희
+喜|기쁠|희
+希|바랄|희
+`;
+</script>
+<script>
+(function(){
+  "use strict";
+  var DATA = RAW_DATA.trim().split("\n").map(function(line){
+    var p = line.split("|");
+    return { c:p[0], hun:p[1], eum:p[2] };
+  });
+  var SIZE = 100;
+  var SECTIONS = Math.ceil(DATA.length / SIZE);
+  var KEY = "hanja3.v1";
+  var $ = function(id){ return document.getElementById(id); };
+  var pad = function(n, w){ n = String(n); while(n.length < (w || 3)) n = "0" + n; return n; };
+
+  var store = { sec:0, mode:"study", dir:"h2m", scope:"all", marks:{}, best:{} };
+  try{
+    var saved = JSON.parse(localStorage.getItem(KEY) || "{}");
+    for(var k in saved){ if(saved[k] !== undefined) store[k] = saved[k]; }
+  }catch(e){}
+  function save(){ try{ localStorage.setItem(KEY, JSON.stringify(store)); }catch(e){} }
+
+  function secRange(i){
+    var a = i * SIZE + 1, b = Math.min((i + 1) * SIZE, DATA.length);
+    return { a:a, b:b, label:pad(a,4) + "–" + pad(b,4) };
+  }
+  function secItems(i){ return DATA.slice(i * SIZE, Math.min((i + 1) * SIZE, DATA.length)); }
+
+  /* ---------- section picker ---------- */
+  var sel = $("secSel");
+  for(var i = 0; i < SECTIONS; i++){
+    var r = secRange(i), o = document.createElement("option");
+    o.value = i;
+    o.textContent = r.a + " – " + r.b + "자";
+    sel.appendChild(o);
+  }
+
+  /* ---------- views ---------- */
+  var view = "study";
+  function setView(v){
+    view = v;
+    ["vStudy","vQuiz","vSetup","vResult"].forEach(function(id){
+      $(id).classList.toggle("on", id === "v" + v.charAt(0).toUpperCase() + v.slice(1));
+    });
+    $("dStudy").classList.toggle("hide", v !== "study");
+    $("dQuiz").classList.toggle("hide", v !== "quiz");
+    $("dResult").classList.toggle("hide", v !== "result");
+    $("ticks").classList.toggle("hide", v === "setup" || v === "result");
+    $("dirBtn").classList.toggle("hide", v === "result");
+    renderKbd();
+  }
+  function renderKbd(){
+    var h = "";
+    if(view === "study") h = "<span><b>Space</b> 뒤집기</span><span><b>←</b> <b>→</b> 이동</span><span><b>S</b> 모름</span><span><b>R</b> 방향</span>";
+    else if(view === "quiz") h = "<span><b>Space</b> 정답</span><span><b>1</b> 맞혔다</span><span><b>2</b> 틀렸다</span>";
+    $("kbd").innerHTML = h;
+  }
+  function setMode(m){
+    store.mode = m; save();
+    $("mStudy").setAttribute("aria-selected", m === "study" ? "true" : "false");
+    $("mTest").setAttribute("aria-selected", m === "test" ? "true" : "false");
+    if(m === "study"){ setView("study"); studyRender(); }
+    else { setupRender(); setView("setup"); counterSet(secRange(store.sec).label); }
+  }
+  function counterSet(html){ $("counter").innerHTML = html; }
+  function dirRender(){
+    $("dirLabel").textContent = store.dir === "h2m" ? "한자 → 뜻·음" : "뜻·음 → 한자";
+  }
+
+  /* ---------- study ---------- */
+  var S = { order:[], pos:0, open:false, onlyMarked:false };
+
+  function studyBuild(keepPos){
+    var items = secItems(store.sec);
+    S.order = [];
+    for(var i = 0; i < items.length; i++){
+      if(S.onlyMarked && !store.marks[items[i].c]) continue;
+      S.order.push(i);
+    }
+    if(!S.order.length){ S.onlyMarked = false; for(var j = 0; j < items.length; j++) S.order.push(j); }
+    if(!keepPos) S.pos = 0;
+    if(S.pos >= S.order.length) S.pos = 0;
+    S.open = false;
+    studyRender();
+  }
+
+  function studyRender(){
+    if(view !== "study") return;
+    var items = secItems(store.sec);
+    var it = items[S.order[S.pos]];
+    var markedCount = 0;
+    for(var i = 0; i < items.length; i++) if(store.marks[items[i].c]) markedCount++;
+    counterSet("<b>" + pad(S.pos + 1) + "</b>/" + S.order.length + "<span>모름 <b>" + markedCount + "</b></span>");
+
+    var marked = !!store.marks[it.c];
+    $("sMark").setAttribute("aria-pressed", marked ? "true" : "false");
+    $("sCard").className = "card" + (marked ? " is-marked" : "");
+    $("sMarkedOnly").setAttribute("aria-pressed", S.onlyMarked ? "true" : "false");
+
+    var html;
+    if(store.dir === "h2m"){
+      html = '<div class="glyph">' + it.c + "</div>";
+      html += S.open
+        ? '<div class="answer reveal"><span class="hun">' + it.hun + '</span><span class="eum">' + it.eum + "</span></div>"
+        : '<div class="tap">뜻과 음은?</div>';
+    }else{
+      html = '<div class="prompt-ko">' + it.hun + " " + it.eum + "</div>";
+      html += S.open
+        ? '<div class="glyph sm reveal">' + it.c + "</div>"
+        : '<div class="tap">어떤 한자?</div>';
+    }
+    $("sBody").innerHTML = html;
+    $("sFlip").textContent = S.open ? "숨기기" : (store.dir === "h2m" ? "뜻·음 보기" : "한자 보기");
+    $("sPrev").disabled = S.pos === 0;
+    $("sNext").disabled = S.pos === S.order.length - 1;
+
+    var t = "";
+    for(var k = 0; k < S.order.length; k++){
+      var ch = items[S.order[k]].c, cls = "";
+      if(k === S.pos) cls = "now";
+      else if(store.marks[ch]) cls = "mark";
+      else if(k < S.pos) cls = "done";
+      t += '<i class="' + cls + '"></i>';
+    }
+    $("ticks").innerHTML = t;
+  }
+
+  function studyMove(d){
+    var n = S.pos + d;
+    if(n < 0 || n >= S.order.length) return;
+    S.pos = n; S.open = false; studyRender();
+  }
+  function studyFlip(){ S.open = !S.open; studyRender(); }
+  function studyToggleMark(){
+    var it = secItems(store.sec)[S.order[S.pos]];
+    if(store.marks[it.c]) delete store.marks[it.c]; else store.marks[it.c] = 1;
+    save(); studyRender();
+  }
+
+  $("sCard").onclick = function(){ if(!ignoreTap()) studyFlip(); };
+  $("sFlip").onclick = studyFlip;
+  $("sPrev").onclick = function(){ studyMove(-1); };
+  $("sNext").onclick = function(){ studyMove(1); };
+  $("sMark").onclick = studyToggleMark;
+  $("sReset").onclick = function(){ S.pos = 0; S.open = false; studyRender(); };
+  $("sMarkedOnly").onclick = function(){ S.onlyMarked = !S.onlyMarked; studyBuild(false); };
+  $("sShuffle").onclick = function(){
+    for(var i = S.order.length - 1; i > 0; i--){
+      var j = Math.floor(Math.random() * (i + 1)), t = S.order[i]; S.order[i] = S.order[j]; S.order[j] = t;
+    }
+    S.pos = 0; S.open = false; studyRender();
+  };
+
+  /* ---------- test ---------- */
+  var Q = { list:[], pos:0, open:false, ok:0, no:0, wrong:[], mode:"seq", full:true };
+
+  function setupRender(){
+    var b = store.best[store.sec];
+    $("tBest").textContent = b ? b.ok + " / " + b.n : "기록 없음";
+    Array.prototype.forEach.call($("scopeToggle").children, function(btn){
+      btn.setAttribute("aria-selected", btn.dataset.scope === store.scope ? "true" : "false");
+    });
+  }
+  Array.prototype.forEach.call($("scopeToggle").children, function(btn){
+    btn.onclick = function(){ store.scope = btn.dataset.scope; save(); setupRender(); };
+  });
+
+  function startTest(mode, list){
+    Q.mode = mode;
+    Q.full = !list && store.scope === "all";
+    if(!list){
+      var items = secItems(store.sec);
+      list = store.scope === "marked"
+        ? items.filter(function(it){ return store.marks[it.c]; })
+        : items.slice();
+      if(!list.length){ list = items.slice(); store.scope = "all"; save(); }
+      if(mode === "rand"){
+        for(var i = list.length - 1; i > 0; i--){
+          var j = Math.floor(Math.random() * (i + 1)), t = list[i]; list[i] = list[j]; list[j] = t;
+        }
+      }
+    }
+    Q.list = list.map(function(it){ return { c:it.c, hun:it.hun, eum:it.eum }; });
+    Q.pos = 0; Q.open = false; Q.ok = 0; Q.no = 0; Q.wrong = [];
+    setView("quiz"); quizRender();
+  }
+  $("tSeq").onclick = function(){ startTest("seq"); };
+  $("tRand").onclick = function(){ startTest("rand"); };
+
+  function quizRender(){
+    var it = Q.list[Q.pos];
+    counterSet("<b>" + pad(Q.pos + 1) + "</b>/" + Q.list.length +
+      '<span class="ok">○ <b>' + Q.ok + '</b></span><span class="no">✕ <b>' + Q.no + "</b></span>");
+
+    var html;
+    if(store.dir === "h2m"){
+      html = '<div class="glyph">' + it.c + "</div>";
+      html += Q.open
+        ? '<div class="answer reveal"><span class="hun">' + it.hun + '</span><span class="eum">' + it.eum + "</span></div>"
+        : '<div class="tap">뜻과 음은?</div>';
+    }else{
+      html = '<div class="prompt-ko">' + it.hun + " " + it.eum + "</div>";
+      html += Q.open
+        ? '<div class="glyph sm reveal">' + it.c + "</div>"
+        : '<div class="tap">어떤 한자?</div>';
+    }
+    $("qBody").innerHTML = html;
+    $("qRowReveal").classList.toggle("hide", Q.open);
+    $("qRowGrade").classList.toggle("hide", !Q.open);
+    $("qBack").disabled = Q.pos === 0;
+
+    var t = "";
+    for(var k = 0; k < Q.list.length; k++){
+      var cls = "";
+      if(k === Q.pos) cls = "now";
+      else if(k < Q.pos) cls = Q.list[k].__res === 1 ? "ok" : "bad";
+      t += '<i class="' + cls + '"></i>';
+    }
+    $("ticks").innerHTML = t;
+  }
+  function reveal(){ if(!Q.open){ Q.open = true; quizRender(); } }
+  function grade(good){
+    if(!Q.open) return;
+    var it = Q.list[Q.pos];
+    it.__res = good ? 1 : 0;
+    if(good){ Q.ok++; }
+    else {
+      Q.no++; Q.wrong.push(it);
+      if(!store.marks[it.c]){ store.marks[it.c] = 1; save(); }
+    }
+    if(Q.pos === Q.list.length - 1){ finish(); }
+    else { Q.pos++; Q.open = false; quizRender(); }
+  }
+  $("qCard").onclick = function(){ if(!ignoreTap()) reveal(); };
+  $("qReveal").onclick = reveal;
+  $("qOkBtn").onclick = function(){ grade(true); };
+  $("qNoBtn").onclick = function(){ grade(false); };
+  $("qQuit").onclick = function(){ setupRender(); setView("setup"); counterSet(secRange(store.sec).label); };
+  $("qBack").onclick = function(){
+    if(Q.pos === 0) return;
+    Q.pos--;
+    var it = Q.list[Q.pos];
+    if(it.__res === 1) Q.ok--;
+    else if(it.__res === 0){
+      Q.no--;
+      var i = Q.wrong.indexOf(it); if(i >= 0) Q.wrong.splice(i, 1);
+    }
+    it.__res = undefined; Q.open = false; quizRender();
+  };
+
+  function finish(){
+    var n = Q.list.length, pct = Math.round(Q.ok / n * 100), r = secRange(store.sec);
+    var prev = store.best[store.sec];
+    if(Q.full && (!prev || Q.ok / n > prev.ok / prev.n)){ store.best[store.sec] = { ok:Q.ok, n:n }; save(); }
+    $("rMeta").textContent = r.label + " · " + (Q.mode === "rand" ? "랜덤" : "순서대로");
+    $("rScore").textContent = Q.ok;
+    $("rOf").textContent = "/ " + n + " · " + pct + "%";
+    $("rNote").textContent = Q.wrong.length === 0
+      ? "전부 맞혔습니다. 다음 구간으로 넘어가도 좋습니다."
+      : "틀린 글자는 '모름'으로 표시해 두었습니다. 학습 모드의 ‘모름만’에서 다시 꺼내 볼 수 있습니다.";
+    $("rWrongWrap").classList.toggle("hide", Q.wrong.length === 0);
+    $("rWrongN").textContent = Q.wrong.length ? Q.wrong.length + "자" : "";
+    $("rWrongs").innerHTML = Q.wrong.map(function(it){
+      return "<button>" + it.c + "<span>" + it.hun + " " + it.eum + "</span></button>";
+    }).join("");
+    $("rRetryWrong").disabled = Q.wrong.length === 0;
+    $("rNextSec").classList.toggle("hide", store.sec >= SECTIONS - 1);
+    counterSet(r.label);
+    setView("result");
+  }
+  $("rRetryWrong").onclick = function(){ if(Q.wrong.length) startTest(Q.mode, Q.wrong.slice()); };
+  $("rAgain").onclick = function(){ startTest(Q.mode); };
+  $("rBack").onclick = function(){ setupRender(); setView("setup"); counterSet(secRange(store.sec).label); };
+  $("rNextSec").onclick = function(){
+    if(store.sec < SECTIONS - 1){
+      store.sec++; save(); sel.value = store.sec;
+      S.onlyMarked = false; S.pos = 0;
+      setupRender(); setView("setup"); counterSet(secRange(store.sec).label);
+      studyBuild(false);
+    }
+  };
+
+  /* ---------- header controls ---------- */
+  sel.onchange = function(){
+    store.sec = parseInt(sel.value, 10); save();
+    S.onlyMarked = false;
+    if(store.mode === "test"){ setupRender(); setView("setup"); counterSet(secRange(store.sec).label); }
+    studyBuild(false);
+  };
+  $("mStudy").onclick = function(){ setMode("study"); };
+  $("mTest").onclick = function(){ setMode("test"); };
+  $("dirBtn").onclick = function(){
+    store.dir = store.dir === "h2m" ? "m2h" : "h2m"; save(); dirRender();
+    if(view === "study"){ S.open = false; studyRender(); }
+    else if(view === "quiz"){ Q.open = false; quizRender(); }
+  };
+
+  /* ---------- swipe (study) ---------- */
+  var tx = 0, ty = 0, tracking = false, swipedAt = 0;
+  var stage = $("stage");
+  stage.addEventListener("touchstart", function(e){
+    if(e.touches.length !== 1) return;
+    tx = e.touches[0].clientX; ty = e.touches[0].clientY; tracking = true; swipedAt = 0;
+  }, { passive:true });
+  stage.addEventListener("touchend", function(e){
+    if(!tracking) return;
+    tracking = false;
+    var t = e.changedTouches[0], dx = t.clientX - tx, dy = t.clientY - ty;
+    if(Math.abs(dx) > 46 && Math.abs(dx) > Math.abs(dy) * 1.3){
+      swipedAt = Date.now();
+      if(view === "study") studyMove(dx < 0 ? 1 : -1);
+    }
+  }, { passive:true });
+  /* a tap that lands right after a swipe is the swipe's own synthetic click */
+  function ignoreTap(){
+    if(Date.now() - swipedAt < 500){ swipedAt = 0; return true; }
+    return false;
+  }
+
+  /* ---------- keyboard (desktop) ---------- */
+  Array.prototype.forEach.call(document.querySelectorAll("button"), function(btn){
+    btn.addEventListener("mousedown", function(e){ e.preventDefault(); });
+  });
+  document.addEventListener("keydown", function(e){
+    if(e.target.tagName === "SELECT" || e.target.tagName === "BUTTON") return;
+    if(e.key === " " || e.key === "Enter"){
+      if(view === "study" || view === "quiz") e.preventDefault();
+      if(view === "study") studyFlip();
+      else if(view === "quiz") reveal();
+      return;
+    }
+    if(view === "study"){
+      if(e.key === "ArrowRight"){ e.preventDefault(); studyMove(1); }
+      else if(e.key === "ArrowLeft"){ e.preventDefault(); studyMove(-1); }
+      else if(e.key === "s" || e.key === "S"){ studyToggleMark(); }
+      else if(e.key === "r" || e.key === "R"){ $("dirBtn").click(); }
+    }else if(view === "quiz"){
+      if(e.key === "1" || e.key === "o" || e.key === "O"){ grade(true); }
+      else if(e.key === "2" || e.key === "x" || e.key === "X"){ grade(false); }
+    }
+  });
+
+  /* ---------- offline (service worker) ---------- */
+  function toast(msg){
+    var el = document.createElement("div");
+    el.className = "toast"; el.textContent = msg;
+    document.body.appendChild(el);
+    requestAnimationFrame(function(){ el.classList.add("on"); });
+    setTimeout(function(){ el.classList.remove("on"); setTimeout(function(){ el.remove(); }, 400); }, 2600);
+  }
+  if("serviceWorker" in navigator){
+    window.addEventListener("load", function(){
+      navigator.serviceWorker.register("sw.js").then(function(){
+        if(localStorage.getItem("hanja3.offline")) return;
+        navigator.serviceWorker.ready.then(function(){
+          try{ localStorage.setItem("hanja3.offline", "1"); }catch(e){}
+          toast("오프라인에서도 쓸 수 있게 저장했습니다");
+        });
+      }).catch(function(){});
+    });
+  }
+
+  /* ---------- boot ---------- */
+  store.sec = Math.min(store.sec, SECTIONS - 1);
+  sel.value = store.sec;
+  dirRender();
+  studyBuild(false);
+  setMode(store.mode === "test" ? "test" : "study");
+})();
+</script>
+
+</body>
+</html>
